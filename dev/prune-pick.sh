@@ -15,7 +15,7 @@ function pickOne() {
         exit 1
     fi
 
-    (git cherry-pick $COMMIT 2>/dev/null || true) && rm -rf "$PRUNE_DIR" && git add "$PRUNE_DIR"
+    (git cherry-pick $COMMIT 2>/dev/null || true) && rm -rf "$PRUNE_DIR" && (git add "$PRUNE_DIR" || true)
     if [ ! -z "$(git status --porcelain | grep -v '^M')" ]; then
         echo "Failed to cherry-pick commit $COMMIT. This script is aborting and leaving the working directory in an intermediate state."
         echo 'You must either `git cherry-pick --abort` OR manually resolve the conflict and run `git cherry-pick --continue`.'
