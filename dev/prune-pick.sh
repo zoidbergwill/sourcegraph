@@ -35,7 +35,7 @@ fi
 
 COMMITS="$COMMIT_RANGE"
 if [[ "$COMMIT_RANGE" == *".."* ]]; then
-    COMMITS=$(git rev-list $COMMIT_RANGE)
+    COMMITS=$(git rev-list --reverse "$COMMIT_RANGE")
 fi
 
 set -e
