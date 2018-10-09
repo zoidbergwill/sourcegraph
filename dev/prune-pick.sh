@@ -8,6 +8,8 @@ function usage() {
 }
 
 function pickOne() {
+    set -e
+
     COMMIT=$1
     PRUNE_DIR=$2
     if [ -z "$COMMIT" ] || [ -z "$PRUNE_DIR" ]; then
