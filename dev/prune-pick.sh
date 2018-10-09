@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 function usage() {
     echo "Usage:   ./cherry-pick.sh <commit-range> <prune-dir>"
     echo "Example: ./cherry-pick.sh 9819020b09e28ceebc7fcd11fa990f7a55074c9d..3e91245cd264a08a306670bb75023e3b9752c711 ./enterprise"
