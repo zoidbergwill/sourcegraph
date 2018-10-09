@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+#
+# TODO
+# - Handle `git cherry-pick` success (still ensure there's no enterprise directory)
+#   - `git cherry-pick` succeeds
+#   - `git cherry-pick` fails
+# - Test on commit range
+
 
 set -x
 
