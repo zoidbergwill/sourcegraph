@@ -71,6 +71,10 @@ func syncPR(baseRepo, baseBranch, headRepo, headBranch string) error {
 
 	// TODO: make GH PR
 
+	// TODO: auto-merge PR if possible
+
+	// TODO: assign PR if not auto-mergeable to the authors of the commits in the PR
+
 	return nil
 }
 
