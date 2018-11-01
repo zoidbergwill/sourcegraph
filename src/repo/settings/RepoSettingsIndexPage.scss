@@ -25,7 +25,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .repo-settings-index-page {
         &__ref {
             border-color: $color-light-border;

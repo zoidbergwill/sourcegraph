@@ -31,7 +31,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .discussions-input {
         border-color: $color-light-border;
 

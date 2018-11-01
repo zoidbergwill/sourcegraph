@@ -43,7 +43,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .overview-item {
         border-color: $color-light-border;
         &__header {

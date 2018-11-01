@@ -13,7 +13,7 @@
 
 /* stylelint-disable selector-class-pattern */
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     --theme-bg-plain: white;
     --theme-color-plain: #2c3850;
     --theme-color-gutter: #c3ccdf;
@@ -30,7 +30,7 @@
     --theme-color-string: #2ba097;
     --theme-color-builtin: #b58900;
 }
-.theme-dark {
+@media screen and (prefers-color-scheme: dark) {
     --theme-bg-plain: #0e121b;
     --theme-color-plain: #f2f4f8;
     --theme-color-gutter: #31445e;

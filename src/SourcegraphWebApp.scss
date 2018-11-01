@@ -59,8 +59,11 @@ $theme-colors-light: (
     --warning: #{$warning};
     --danger: #{$danger};
 }
-.theme-light {
-    --secondary: #{$secondary-light};
+@media screen and (prefers-color-scheme: light) {
+	:root {
+		--secondary: #{$secondary-light};
+	}
+
 }
 
 $body-color: var(--body-color);
@@ -70,11 +73,17 @@ $text-muted: var(--text-muted);
 
 // Borders
 $border-color: var(--border-color);
-.theme-dark {
-    --border-color: #{$color-border};
+@media screen and (prefers-color-scheme: dark) {
+	:root {
+		--border-color: #{$color-border};
+	}
+
 }
-.theme-light {
-    --border-color: #{$color-light-border};
+@media screen and (prefers-color-scheme: light) {
+	:root {
+		--border-color: #{$color-light-border};
+	}
+
 }
 
 // Links
@@ -174,14 +183,17 @@ body {
     background-color: rgba(217, 72, 15, 0.5);
 }
 
-.theme-light {
-    .selection-highlight {
-        background-color: rgba(255, 192, 120, 0.5);
-    }
+@media screen and (prefers-color-scheme: light) {
+	body {
+		.selection-highlight {
+	        background-color: rgba(255, 192, 120, 0.5);
+	    }
 
-    .selection-highlight-sticky {
-        background-color: rgba(255, 192, 120, 0.5);
-    }
+	    .selection-highlight-sticky {
+	        background-color: rgba(255, 192, 120, 0.5);
+	    }
+	}
+
 }
 
 .app {

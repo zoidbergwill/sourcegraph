@@ -1,7 +1,7 @@
 @import 'bootstrap/scss/badge';
 
 // Light theme badge variants
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     @each $color, $value in $theme-colors-light {
         .badge-#{$color} {
             @include badge-variant($value);

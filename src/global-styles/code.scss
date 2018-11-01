@@ -22,7 +22,7 @@ kbd {
     background-color: #93a9c8;
     box-shadow: inset 0 -2px 0 #5d7eac;
 
-    .theme-light & {
+    @media screen and (prefers-color-scheme: light) {
         color: $color-light-text-2;
         background-color: $color-light-bg-2;
         box-shadow: inset 0 -2px 0 #cad2e2;

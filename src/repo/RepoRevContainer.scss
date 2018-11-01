@@ -49,7 +49,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .repo-rev-container {
         &__sidebar {
             background: $color-light-bg-2;

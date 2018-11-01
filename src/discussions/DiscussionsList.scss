@@ -26,7 +26,7 @@
         &-id {
             margin-left: 0.25rem;
             color: $color-light-text-2;
-            .theme-dark & {
+            @media screen and (prefers-color-scheme: dark) {
                 color: #566e9f;
             }
         }
@@ -49,7 +49,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .discussions-list {
         &__row {
             color: $color-light-text-2;

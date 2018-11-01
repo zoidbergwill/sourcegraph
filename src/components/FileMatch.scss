@@ -20,8 +20,7 @@
         &:not(:first-child) {
             border-top: 1px solid #2a3a51;
         }
-
-        .theme-light & {
+		@media screen and (prefers-color-scheme: light) {
             background-color: $color-light-bg-1;
             border-top: 1px solid $color-light-border;
 
@@ -30,6 +29,7 @@
                 text-decoration: none;
             }
         }
+
     }
 
     &__code {
@@ -49,7 +49,7 @@
                 display: inline-block;
             }
         }
-        .theme-light & {
+		@media screen and (prefers-color-scheme: light) {
             border-bottom-color: $color-light-border;
         }
     }

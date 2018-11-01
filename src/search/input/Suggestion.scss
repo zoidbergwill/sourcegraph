@@ -47,7 +47,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .suggestion {
         background-color: $color-light-bg-1;
 

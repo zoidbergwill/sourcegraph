@@ -24,7 +24,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .signin-signup-form {
         &__mode {
             &:hover {

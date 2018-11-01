@@ -51,7 +51,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .action-container {
         border-color: $color-light-border;
     }

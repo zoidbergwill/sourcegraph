@@ -5,20 +5,25 @@
 $body-color-light: #2b3750;
 $body-color-dark: #f2f4f8;
 
-.theme-light {
-    --body-color: #{$body-color-light};
-    --body-bg: white;
-    --text-muted: #{$color-light-text-2};
-    --link-color: #566e9f;
-    --link-hover-color: #1d2535;
+@media (prefers-color-scheme: light) {
+	:root {
+		--body-color: #{$body-color-light};
+	    --body-bg: white;
+	    --text-muted: #{$color-light-text-2};
+	    --link-color: #566e9f;
+	    --link-hover-color: #1d2535;
+	}
+
 }
 
-.theme-dark {
-    --body-color: #{$body-color-dark};
-    --body-bg: #151c28;
-    --text-muted: #{$color-text-1};
-    --link-color: #a2b0cd;
-    --link-hover-color: white;
+@media (prefers-color-scheme: dark) {
+	:root {
+	    --body-color: #{$body-color-dark};
+	    --body-bg: #151c28;
+	    --text-muted: #{$color-text-1};
+	    --link-color: #a2b0cd;
+	    --link-hover-color: white;
+	}
 }
 
 h1 {

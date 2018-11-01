@@ -15,7 +15,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .d3-bar-chart {
         .axis path,
         .axis .tick line {

@@ -75,7 +75,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .popover-button {
         color: $color-light-text-5;
 

@@ -62,7 +62,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .toast {
         border: 1px solid $color-light-border;
 

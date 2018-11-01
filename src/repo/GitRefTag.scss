@@ -26,7 +26,7 @@
     font-weight: bold;
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .git-ref-tag {
         border-color: $color-light-border;
     }

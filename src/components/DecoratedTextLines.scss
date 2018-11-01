@@ -28,7 +28,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     tr.added {
         background-color: rgba(31, 116, 31, 0.15);
     }

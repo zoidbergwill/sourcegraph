@@ -42,7 +42,7 @@
         opacity: 0;
     }
     &:hover .copy-link-action {
-        opacity: 1;
+        opacity: 1; 
     }
 
     &__spacer {
@@ -50,14 +50,14 @@
     }
 }
 
-.theme-dark {
-    .repo-header {
+@media screen and (prefers-color-scheme: dark) {
+    body .repo-header {
         border-color: #233043;
     }
 }
 
-.theme-light {
-    .repo-header {
+@media screen and (prefers-color-scheme: light) {
+    body .repo-header {
         border-color: $color-light-border;
     }
 }

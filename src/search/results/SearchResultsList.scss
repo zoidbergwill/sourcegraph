@@ -42,7 +42,7 @@
     }
 }
 
-.theme-dark {
+@media screen and (prefers-color-scheme: dark) {
     .search-results-list {
         &__jump-to-top {
             color: $color-text-2;

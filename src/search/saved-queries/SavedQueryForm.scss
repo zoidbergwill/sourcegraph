@@ -26,7 +26,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .saved-query-form {
         background: $color-light-bg-1;
         border: 1px solid $color-light-border;

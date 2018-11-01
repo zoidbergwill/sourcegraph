@@ -129,6 +129,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
         updateUserSessionStores()
 
         document.body.classList.add('theme')
+
         this.subscriptions.add(
             authenticatedUser.subscribe(
                 authenticatedUser => this.setState({ authenticatedUser }),
@@ -177,6 +178,19 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
                 err => console.error(err)
             )
         )
+		if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+			console.log("it's light")
+			this.setState({ isLightTheme: true })
+			// document.body.classList.remove('theme-dark')
+			// document.body.classList.add('theme-light')
+		} else if  (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+			console.log("it's dark")
+			this.setState({ isLightTheme: false })
+			// document.body.classList.remove('theme-light')
+			// document.body.classList.add('theme-dark')
+		} else {
+			console.log("it ain't it cheif")
+		}
     }
 
     public componentWillUnmount(): void {
@@ -196,6 +210,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             document.body.classList.toggle('theme-light', this.state.isLightTheme)
             document.body.classList.toggle('theme-dark', !this.state.isLightTheme)
         }
+
     }
 
     public render(): React.ReactFragment | null {

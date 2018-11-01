@@ -2,7 +2,7 @@
     border: solid 1px #2b3750;
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .monaco-editor-container {
         border-color: $color-light-border;
     }

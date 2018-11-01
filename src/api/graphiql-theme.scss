@@ -206,7 +206,7 @@
 }
 
 /* Light theme overrides */
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .graphiql-container {
         color: $color-light-text-1;
         .topBar,
@@ -283,22 +283,24 @@ body > .CodeMirror-hints {
         }
     }
 }
-body.theme-light > .CodeMirror-lint-tooltip,
-body.theme-light > .CodeMirror-info,
-body.theme-light > .CodeMirror-hints {
-    background: $color-light-bg-2;
-    color: $color-light-text-1;
-    .info-description {
-        color: $color-light-text-1;
-    }
-    .CodeMirror-hint {
-        border-color: $color-light-border;
-        color: $color-light-text-1;
-        &-information {
-            border-color: $color-light-border;
-            > .content {
-                color: $color-light-text-1;
-            }
-        }
-    }
+@media screen and (prefers-color-scheme: light) {
+	body > .CodeMirror-lint-tooltip,
+	body > .CodeMirror-info,
+	body > .CodeMirror-hints {
+	    background: $color-light-bg-2;
+	    color: $color-light-text-1;
+	    .info-description {
+	        color: $color-light-text-1;
+	    }
+	    .CodeMirror-hint {
+	        border-color: $color-light-border;
+	        color: $color-light-text-1;
+	        &-information {
+	            border-color: $color-light-border;
+	            > .content {
+	                color: $color-light-text-1;
+	            }
+	        }
+	    }
+	}
 }

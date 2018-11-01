@@ -114,14 +114,17 @@
     width: 100%;
 }
 
-.theme-light .hljs {
-    color: inherit;
+@media screen and (prefers-color-scheme: light) {
+	 .hljs {
+    	color: inherit;
+	}
 }
-
-.theme-light .hljs-subst,
-.hljs-function,
-.hljs-title,
-.hljs-params,
-.hljs-formula {
-    color: inherit;
+@media screen and (prefers-color-scheme: light) {
+	.hljs-subst,
+	.hljs-function,
+	.hljs-title,
+	.hljs-params,
+	.hljs-formula {
+	    color: inherit;
+	}
 }

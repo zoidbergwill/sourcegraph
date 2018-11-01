@@ -18,7 +18,7 @@
         border-top: none;
         padding: 0;
 
-        .theme-light & {
+        @media screen and (prefers-color-scheme: light) {
             background-color: $color-light-bg-2;
             border-top: none;
         }
@@ -37,10 +37,12 @@
         &::-webkit-scrollbar-thumb {
             background-color: #2a3a51;
         }
+		@media screen and (prefers-color-scheme: light) {
+        	&::-webkit-scrollbar-thumb {
+            	background-color: $color-light-bg-3;
+        	}
+		}
 
-        .theme-light &::-webkit-scrollbar-thumb {
-            background-color: $color-light-bg-3;
-        }
     }
 
     &__loading-notifier {
@@ -53,7 +55,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .query-input2 {
         &__loading-notifier {
             background-color: $color-light-bg-1;

@@ -43,7 +43,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .api-console {
         &__footer {
             background: $color-light-bg-2;

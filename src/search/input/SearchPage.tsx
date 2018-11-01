@@ -56,13 +56,8 @@ export class SearchPage extends React.Component<Props, State> {
         return (
             <div className="search-page">
                 <PageTitle title={this.getPageTitle()} />
-                <img
+                <figure
                     className="search-page__logo"
-                    src={
-                        `${window.context.assetsRoot}/img/sourcegraph` +
-                        (this.props.isLightTheme ? '-light' : '') +
-                        '-head-logo.svg'
-                    }
                 />
                 <Form className="search search-page__container" onSubmit={this.onSubmit}>
                     <div className="search-page__input-container">

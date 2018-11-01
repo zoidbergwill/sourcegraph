@@ -62,7 +62,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .resizable {
         &__handle {
             background-color: $color-light-bg-5;

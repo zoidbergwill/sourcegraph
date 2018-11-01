@@ -29,10 +29,10 @@
             user-select: none;
             vertical-align: top;
 
-            .theme-dark & {
+            @media screen and (prefers-color-scheme: dark) {
                 color: $gray-18;
             }
-            .theme-light & {
+            @media screen and (prefers-color-scheme: light) {
                 color: $gray-05;
             }
         }
@@ -40,10 +40,10 @@
         tr {
             transition: background 200ms ease-out;
             &.selected {
-                .theme-light & {
+                @media screen and (prefers-color-scheme: light) {
                     background: $gray-02;
                 }
-                .theme-dark & {
+                @media screen and (prefers-color-scheme: dark) {
                     background: $gray-21;
                 }
             }
@@ -77,10 +77,10 @@
                     width: 0;
                     outline: none;
 
-                    .theme-dark & {
+                    @media screen and (prefers-color-scheme: dark) {
                         color: $gray-16;
                     }
-                    .theme-light & {
+                    @media screen and (prefers-color-scheme: light) {
                         color: $gray-07;
                     }
                 }

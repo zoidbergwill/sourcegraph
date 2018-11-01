@@ -49,7 +49,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .file-locations-tree {
         &__list {
             border-right: 1px solid $color-light-border;

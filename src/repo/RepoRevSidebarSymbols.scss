@@ -36,14 +36,14 @@
 
         &__container-name,
         &__path {
-            .theme-dark & {
+            @media screen and (prefers-color-scheme: dark) {
                 color: #566e9f;
             }
         }
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .repo-rev-sidebar-symbols {
         &-node {
             &__link {

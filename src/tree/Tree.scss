@@ -83,7 +83,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .tree {
         &__row {
             color: inherit;

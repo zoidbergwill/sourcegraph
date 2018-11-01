@@ -47,7 +47,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .file-diff-node {
         &__header {
             &-path {

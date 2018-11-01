@@ -10,12 +10,18 @@ $card-cap-bg: var(--card-cap-bg);
     font-weight: bold;
 }
 
-.theme-dark {
-    --card-cap-bg: #{$color-bg-3};
-    --card-border-color: #{$color-border};
+@media screen and (prefers-color-scheme: dark) {
+	:root {
+		--card-cap-bg: #{$color-bg-3};
+	    --card-border-color: #{$color-border};
+	}
+
 }
 
-.theme-light {
-    --card-cap-bg: #{rgba($color-light-bg-2, 0.75)};
-    --card-border-color: #{$color-light-border};
+@media screen and (prefers-color-scheme: light) {
+	:root {
+		--card-cap-bg: #{rgba($color-light-bg-2, 0.75)};
+	    --card-border-color: #{$color-light-border};
+	}
+
 }

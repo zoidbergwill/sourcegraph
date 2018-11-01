@@ -119,7 +119,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .git-commit-node {
         &__message {
             &-subject {

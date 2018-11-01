@@ -29,17 +29,19 @@
         }
     }
 }
-
-.theme-light .doc-site-page {
-    background-color: $color-light-bg-3;
-    &__content {
-        background-color: $color-light-bg-1;
-    }
+@media screen and (prefers-color-scheme: light) {
+	.doc-site-page {
+	    background-color: $color-light-bg-3;
+	    &__content {
+	        background-color: $color-light-bg-1;
+	    }
+	}
 }
-
-.theme-dark .doc-site-page {
-    background-color: $color-bg-3;
-    &__content {
-        background-color: $color-bg-1;
-    }
+@media screen and (prefers-color-scheme: dark) {
+	.doc-site-page {
+	    background-color: $color-bg-3;
+	    &__content {
+	        background-color: $color-bg-1;
+	    }
+	}
 }

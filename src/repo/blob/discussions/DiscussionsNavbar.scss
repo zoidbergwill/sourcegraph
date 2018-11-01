@@ -14,7 +14,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .discussions-navbar {
         border-color: $color-light-border;
     }

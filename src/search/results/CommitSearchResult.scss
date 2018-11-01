@@ -72,7 +72,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .commit-search-result {
         &__item {
             .file-header {

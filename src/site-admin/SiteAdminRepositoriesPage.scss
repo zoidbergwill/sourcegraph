@@ -47,7 +47,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .add-public-repository-form {
         border-color: $color-light-border;
 

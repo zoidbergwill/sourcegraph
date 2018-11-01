@@ -93,7 +93,7 @@
     }
 }
 
-.theme-light {
+@media screen and (prefers-color-scheme: light) {
     .scope-page {
         &__row {
             border-color: $color-light-border;
