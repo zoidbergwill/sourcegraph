@@ -62,7 +62,9 @@ export interface LayoutProps
     viewerSubject: Pick<GQL.IConfigurationSubject, 'id' | 'viewerCanAdminister'>
 
     isLightTheme: boolean
+    sourcegraphTheme: 'dark' | 'light' | 'system'
     onThemeChange: () => void
+    useSystemTheme: () => void
     onMainPage: (mainPage: boolean) => void
     isMainPage: boolean
     navbarSearchQuery: string
@@ -81,6 +83,8 @@ export const Layout: React.SFC<LayoutProps> = props => {
     if (isSiteInit && !props.isLightTheme) {
         props.onThemeChange()
     }
+    // This doesn't have to be set with new theme management because the theme defaults to system and if
+    // system is not supported it falls-back to light
 
     // Remove trailing slash (which is never valid in any of our URLs).
     if (props.location.pathname !== '/' && props.location.pathname.endsWith('/')) {

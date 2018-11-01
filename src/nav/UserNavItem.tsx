@@ -9,7 +9,9 @@ interface Props {
     location: H.Location
     authenticatedUser: GQL.IUser
     isLightTheme: boolean
+    sourcegraphTheme: 'dark' | 'light' | 'system'
     onThemeChange: () => void
+    useSystemTheme: () => void
     isMainPage?: boolean
     showAbout: boolean
     showDiscussions: boolean
@@ -45,10 +47,31 @@ export class UserNavItem extends React.PureComponent<Props, State> {
     }
     public render(): JSX.Element | null {
         let systemThemeButton
-        if (this.state.supportsSystemTheme) {
+
+        if (this.state.supportsSystemTheme && this.props.sourcegraphTheme !== 'system') {
             systemThemeButton = (
-                <button type="button" className="dropdown-item e2e-user-nav-item__theme">
+                <button
+                    type="button"
+                    className="dropdown-item e2e-user-nav-item__theme"
+                    onClick={this.props.useSystemTheme}
+                >
                     Use system theme
+                </button>
+            )
+        }
+
+        let changeThemeButton
+        if (this.props.sourcegraphTheme === 'dark' || this.props.sourcegraphTheme === 'system') {
+            changeThemeButton = (
+                <button type="button" className="dropdown-item e2e-user-nav-item__theme" onClick={this.onThemeChange}>
+                    Use light theme
+                </button>
+            )
+        }
+        if (this.props.sourcegraphTheme === 'light') {
+            changeThemeButton = (
+                <button type="button" className="dropdown-item e2e-user-nav-item__theme" onClick={this.onThemeChange}>
+                    Use dark theme
                 </button>
             )
         }
@@ -87,13 +110,7 @@ export class UserNavItem extends React.PureComponent<Props, State> {
                     <Link to="/search/searches" className="dropdown-item">
                         Saved searches
                     </Link>
-                    <button
-                        type="button"
-                        className="dropdown-item e2e-user-nav-item__theme"
-                        onClick={this.onThemeChange}
-                    >
-                        Use {this.props.isLightTheme ? 'dark' : 'light'} theme
-                    </button>
+                    {changeThemeButton}
                     {systemThemeButton}
                     <Link to="/help" className="dropdown-item">
                         Help

@@ -24,7 +24,9 @@ interface Props extends ConfigurationCascadeProps, ExtensionsProps, ExtensionsCo
     history: H.History
     authenticatedUser: GQL.IUser | null
     isLightTheme: boolean
+    sourcegraphTheme: 'dark' | 'light' | 'system'
     onThemeChange: () => void
+    useSystemTheme: () => void
     isMainPage?: boolean
 }
 

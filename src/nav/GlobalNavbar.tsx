@@ -19,7 +19,9 @@ interface Props extends ConfigurationCascadeProps, ExtensionsProps, ExtensionsCo
     location: H.Location
     authenticatedUser: GQL.IUser | null
     isLightTheme: boolean
+    sourcegraphTheme: 'dark' | 'light' | 'system'
     onThemeChange: () => void
+    useSystemTheme: () => void
     navbarSearchQuery: string
     onNavbarQueryChange: (query: string) => void
 

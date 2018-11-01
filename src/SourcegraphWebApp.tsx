@@ -286,7 +286,9 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
                                 configurationCascade={this.state.configurationCascade}
                                 // Theme
                                 isLightTheme={this.state.isLightTheme}
+                                sourcegraphTheme={this.state.sourcegraphTheme}
                                 onThemeChange={this.onThemeChange}
+                                useSystemTheme={this.useSystemTheme}
                                 isMainPage={this.state.isMainPage}
                                 onMainPage={this.onMainPage}
                                 // Search query
@@ -318,6 +320,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
     }
     private useSystemTheme = () => {
         this.setState({ sourcegraphTheme: 'system' })
+        console.log('Using systemtheme from component')
         eventLogger.log(this.state.sourcegraphTheme)
     }
 
