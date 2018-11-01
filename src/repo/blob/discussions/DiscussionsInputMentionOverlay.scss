@@ -12,7 +12,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .discussions-input-mention-overlay {
         &__list-group-item {
             color: $color-light-text-2;

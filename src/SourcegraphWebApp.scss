@@ -47,6 +47,8 @@ $warning: $yellow;
 $danger: $red;
 $secondary-light: darken($gray-01, 5%);
 
+
+
 $theme-colors-light: (
     'secondary': $secondary-light,
 );
@@ -59,10 +61,8 @@ $theme-colors-light: (
     --warning: #{$warning};
     --danger: #{$danger};
 }
-@media screen and (prefers-color-scheme: light) {
-	:root {
+@include theme-root(light) {
 		--secondary: #{$secondary-light};
-	}
 
 }
 
@@ -73,16 +73,12 @@ $text-muted: var(--text-muted);
 
 // Borders
 $border-color: var(--border-color);
-@media screen and (prefers-color-scheme: dark) {
-	:root {
+@include theme-root(dark) {
 		--border-color: #{$color-border};
-	}
 
 }
-@media screen and (prefers-color-scheme: light) {
-	:root {
+@include theme-root(light) {
 		--border-color: #{$color-light-border};
-	}
 
 }
 
@@ -183,17 +179,14 @@ body {
     background-color: rgba(217, 72, 15, 0.5);
 }
 
-@media screen and (prefers-color-scheme: light) {
-	body {
-		.selection-highlight {
-	        background-color: rgba(255, 192, 120, 0.5);
-	    }
+@include theme(light) {
+	.selection-highlight {
+        background-color: rgba(255, 192, 120, 0.5);
+    }
 
-	    .selection-highlight-sticky {
-	        background-color: rgba(255, 192, 120, 0.5);
-	    }
-	}
-
+    .selection-highlight-sticky {
+        background-color: rgba(255, 192, 120, 0.5);
+    }
 }
 
 .app {

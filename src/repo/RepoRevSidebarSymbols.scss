@@ -34,16 +34,10 @@
             }
         }
 
-        &__container-name,
-        &__path {
-            @media screen and (prefers-color-scheme: dark) {
-                color: #566e9f;
-            }
-        }
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .repo-rev-sidebar-symbols {
         &-node {
             &__link {
@@ -57,6 +51,17 @@
             &__name {
                 color: $color-light-text-1;
             }
+        }
+    }
+}
+
+@include theme(dark) {
+    .repo-rev-sidebar-symbols {
+        &-node {
+			&__container-name,
+	        &__path {
+                color: #566e9f;
+	        }
         }
     }
 }

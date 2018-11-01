@@ -62,7 +62,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .resizable {
         &__handle {
             background-color: $color-light-bg-5;

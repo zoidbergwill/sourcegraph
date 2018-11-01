@@ -82,7 +82,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .diff-hunk {
         &__num {
             color: $color-light-text-2;

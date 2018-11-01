@@ -18,12 +18,6 @@
         width: 20rem;
         margin-top: 6rem;
         max-width: 90%;
-		@media screen and (prefers-color-scheme: dark) {
-			background: url("/.assets/img/sourcegraph-head-logo.svg");
-		}
-		@media screen and (prefers-color-scheme: light) {
-			background: url("/.assets/img/sourcegraph-light-head-logo.svg");
-		}
 		height: 45px;
 		background-repeat: no-repeat;
 		background-position: center;
@@ -59,10 +53,20 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .search-page {
         &__sign-in {
             color: $color-light-text-4;
         }
+		&__logo {
+			background: url("/.assets/img/sourcegraph-light-head-logo.svg");
+		}
+    }
+}
+@include theme(dark) {
+    .search-page {
+		&__logo {
+			background: url("/.assets/img/sourcegraph-head-logo.svg");
+		}
     }
 }

@@ -29,7 +29,7 @@
         }
     }
 }
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
 	.doc-site-page {
 	    background-color: $color-light-bg-3;
 	    &__content {
@@ -37,7 +37,7 @@
 	    }
 	}
 }
-@media screen and (prefers-color-scheme: dark) {
+@include theme(dark) {
 	.doc-site-page {
 	    background-color: $color-bg-3;
 	    &__content {

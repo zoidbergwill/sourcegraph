@@ -206,7 +206,7 @@
 }
 
 /* Light theme overrides */
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .graphiql-container {
         color: $color-light-text-1;
         .topBar,
@@ -283,7 +283,7 @@ body > .CodeMirror-hints {
         }
     }
 }
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
 	body > .CodeMirror-lint-tooltip,
 	body > .CodeMirror-info,
 	body > .CodeMirror-hints {

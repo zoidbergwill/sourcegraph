@@ -1,6 +1,6 @@
 @import 'bootstrap/scss/tables';
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .table {
         th,
         td {

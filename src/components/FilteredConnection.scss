@@ -59,7 +59,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .filtered-connection {
         &--compact .filtered-connection__summary {
             border-color: $color-light-border;

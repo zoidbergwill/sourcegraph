@@ -62,7 +62,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .toast {
         border: 1px solid $color-light-border;
 

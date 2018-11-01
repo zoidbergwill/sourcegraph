@@ -83,7 +83,7 @@ interface SourcegraphWebAppState
     /**
      * Whether the light theme is enabled or not
      */
-    isLightTheme: boolean
+    isLightTheme: boolean 
 
     /**
      * Whether the user is on MainPage and therefore not logged in
@@ -288,6 +288,14 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
     private onThemeChange = () => {
         this.setState(
             state => ({ isLightTheme: !state.isLightTheme }),
+            () => {
+                eventLogger.log(this.state.isLightTheme ? 'LightThemeClicked' : 'DarkThemeClicked')
+            }
+        )
+    }
+	private useSystemTheme = () => {
+        this.setState(
+            state => ({ isLightTheme: null }),
             () => {
                 eventLogger.log(this.state.isLightTheme ? 'LightThemeClicked' : 'DarkThemeClicked')
             }

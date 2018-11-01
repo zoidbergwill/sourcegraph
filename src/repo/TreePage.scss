@@ -75,7 +75,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .tree-entry {
         &:hover {
             background-color: $color-light-bg-2;

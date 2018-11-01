@@ -52,7 +52,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .global-navbar {
         &--bg {
             background-color: $color-light-bg-2;

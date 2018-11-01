@@ -2,7 +2,7 @@
 @import 'bootstrap/scss/button-group';
 
 // Light theme button variants
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     @each $color, $value in $theme-colors-light {
         .btn-#{$color} {
             @include button-variant($value, $value);
@@ -38,10 +38,6 @@
 
     &:hover:not(:disabled):not(.disabled) {
         color: white;
-
-        @media screen and (prefers-color-scheme: light) {
-            color: $color-light-text-2;
-        }
     }
 }
 
@@ -53,14 +49,19 @@
 .btn.btn-outline-link {
     color: $link-color !important;
 }
-@media screen and (prefers-color-scheme: dark) {
+@include theme(dark) {
     .btn.btn-outline-link {
         @include button-outline-variant($secondary);
     }
 }
 // stylelint-disable-next-line no-duplicate-selectors
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .btn.btn-outline-link {
         @include button-outline-variant($secondary-light);
     }
+	.btn-icon {
+		&:hover:not(:disabled):not(.disabled) {
+			color: $color-light-text-2;
+		}
+	}
 }

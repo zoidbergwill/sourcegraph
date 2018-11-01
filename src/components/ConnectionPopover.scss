@@ -50,7 +50,7 @@ $popover-item-padding-v: 0.325rem;
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .connection-popover {
         &__node {
             border-color: $color-light-border;

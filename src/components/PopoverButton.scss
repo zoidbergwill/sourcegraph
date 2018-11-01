@@ -75,7 +75,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .popover-button {
         color: $color-light-text-5;
 

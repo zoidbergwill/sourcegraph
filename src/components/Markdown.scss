@@ -72,7 +72,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .markdown {
         h1,
         h2,

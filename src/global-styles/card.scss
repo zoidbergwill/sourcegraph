@@ -10,18 +10,14 @@ $card-cap-bg: var(--card-cap-bg);
     font-weight: bold;
 }
 
-@media screen and (prefers-color-scheme: dark) {
-	:root {
+@include theme-root(dark) {
 		--card-cap-bg: #{$color-bg-3};
 	    --card-border-color: #{$color-border};
-	}
 
 }
 
-@media screen and (prefers-color-scheme: light) {
-	:root {
+@include theme-root(light) {
 		--card-cap-bg: #{rgba($color-light-bg-2, 0.75)};
 	    --card-border-color: #{$color-light-border};
-	}
 
 }

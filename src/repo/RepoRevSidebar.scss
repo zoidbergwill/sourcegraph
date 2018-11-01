@@ -35,7 +35,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .repo-rev-sidebar {
         border-right-color: $color-light-border;
     }

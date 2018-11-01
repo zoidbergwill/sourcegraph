@@ -16,11 +16,6 @@
         color: #93a9c8;
         background: $color-bg-1;
         border-bottom: 1px solid $color-border;
-        @media screen and (prefers-color-scheme: light) {
-            color: $color-light-text-2;
-            background: $color-light-bg-1;
-            border-bottom: 1px solid $color-light-border;
-        }
     }
 
     &__filters {
@@ -41,4 +36,11 @@
             padding-right: 0.5rem;
         }
     }
+}
+@include theme(light) {
+	.search-results__filters-bar {
+	color: $color-light-text-2;
+	background: $color-light-bg-1;
+	border-bottom: 1px solid $color-light-border;
+	}
 }

@@ -17,21 +17,17 @@ $dropdown-padding-y: $dropdown-item-padding-y;
     margin: 0.25rem 0;
 }
 
-@media screen and (prefers-color-scheme: dark) {
-	:root {
+@include theme-root(dark) {
 		--dropdown-bg: #{$color-bg-4};
 	    --dropdown-border-color: #{$color-border};
 	    --dropdown-link-hover-bg: #{$color-bg-2};
 	    --dropdown-header-color: #{$color-text-1};
-	}
 
 }
 
-@media screen and (prefers-color-scheme: light) {
-	:root {
+@include theme-root(light) {
 		--dropdown-bg: var(--body-bg);
 	    --dropdown-border-color: #{$color-light-border};
 	    --dropdown-link-hover-bg: #{$color-light-bg-2};
 	    --dropdown-header-color: #{$color-light-text-2};
-	}
 }

@@ -1,6 +1,6 @@
 @import 'bootstrap/scss/alert';
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     @each $color, $value in map-merge($theme-colors, $theme-colors-light) {
         .alert-#{$color} {
             @include alert-variant(

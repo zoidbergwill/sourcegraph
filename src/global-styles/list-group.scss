@@ -10,7 +10,7 @@ $list-group-action-active-bg: $color-bg-5;
 
 @import 'bootstrap/scss/list-group';
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .list-group-item {
         border-color: $color-light-border;
     }
@@ -30,7 +30,7 @@ $list-group-action-active-bg: $color-bg-5;
 
 // .list-group-item-$color is too light in the dark theme. Recreate these styles to have colors with less
 // brightness.
-@media screen and (prefers-color-scheme: dark) {
+@include theme(dark) {
     @each $color, $value in $theme-colors {
         @include list-group-item-variant($color, theme-color-level($color, 6), theme-color-level($color, -9));
         a.list-group-item-#{$color}:hover {

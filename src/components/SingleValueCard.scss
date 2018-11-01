@@ -6,7 +6,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .single-value-card {
         background-color: $color-light-bg-2;
     }

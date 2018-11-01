@@ -47,7 +47,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .file-diff-node {
         &__header {
             &-path {

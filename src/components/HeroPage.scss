@@ -44,7 +44,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .hero-page {
         background-color: inherit;
         color: inherit;

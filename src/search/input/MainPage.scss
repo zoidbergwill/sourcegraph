@@ -994,7 +994,7 @@ body.main-page {
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .main-page {
         &__sign-in {
             color: $color-light-text-4;

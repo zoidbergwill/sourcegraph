@@ -83,7 +83,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .tree {
         &__row {
             color: inherit;

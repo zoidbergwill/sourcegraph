@@ -6,9 +6,11 @@
     --primary-opacity-2: #{transparentize($primary, 0.8)};
 }
 
-@media screen and (prefers-color-scheme: light) {
-    --extension-card-bg: #{lighten($color-light-bg-2, 2.5%)};
+@include theme-root(light) {
+	--extension-card-bg: #{lighten($color-light-bg-2, 2.5%)};
+
 }
-@media screen and (prefers-color-scheme: dark) {
-    --extension-card-bg: #{$color-bg-2};
+@include theme-root(dark) {
+	--extension-card-bg: #{$color-bg-2};
+
 }

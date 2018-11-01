@@ -28,7 +28,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     tr.added {
         background-color: rgba(31, 116, 31, 0.15);
     }

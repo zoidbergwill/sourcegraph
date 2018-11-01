@@ -33,7 +33,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .result-container {
         border: 1px solid $color-light-border;
         &__header {

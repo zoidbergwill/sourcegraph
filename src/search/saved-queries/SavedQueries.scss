@@ -29,7 +29,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .saved-query {
         &__row {
             border-color: $color-light-border;

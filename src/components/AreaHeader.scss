@@ -1,7 +1,7 @@
 .simple-area-header {
     background-color: $color-bg-4;
 }
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .simple-area-header {
         background-color: $color-light-bg-2;
         border-top: solid 1px $color-light-border;
@@ -68,7 +68,7 @@
 }
 
 // stylelint-disable-next-line no-duplicate-selectors
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .area-header {
         background-color: $color-light-bg-2;
         border-top-color: $color-light-border;

@@ -84,7 +84,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .discussions-comment {
         &:first-of-type {
             border: none;

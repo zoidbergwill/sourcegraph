@@ -51,7 +51,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .action-container {
         border-color: $color-light-border;
     }

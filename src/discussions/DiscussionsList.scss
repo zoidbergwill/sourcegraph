@@ -26,9 +26,6 @@
         &-id {
             margin-left: 0.25rem;
             color: $color-light-text-2;
-            @media screen and (prefers-color-scheme: dark) {
-                color: #566e9f;
-            }
         }
         &-spacer {
             flex: 1;
@@ -49,7 +46,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .discussions-list {
         &__row {
             color: $color-light-text-2;
@@ -60,6 +57,15 @@
             &:hover {
                 background-color: $color-light-bg-3;
             }
+        }
+    }
+}
+@include theme(dark) {
+    .discussions-list {
+        &__row {
+            &-id {
+				color: #566e9f;
+			}
         }
     }
 }

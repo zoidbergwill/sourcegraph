@@ -20,15 +20,6 @@
         &:not(:first-child) {
             border-top: 1px solid #2a3a51;
         }
-		@media screen and (prefers-color-scheme: light) {
-            background-color: $color-light-bg-1;
-            border-top: 1px solid $color-light-border;
-
-            &:hover {
-                background-color: $color-light-bg-4;
-                text-decoration: none;
-            }
-        }
 
     }
 
@@ -49,8 +40,21 @@
                 display: inline-block;
             }
         }
-		@media screen and (prefers-color-scheme: light) {
-            border-bottom-color: $color-light-border;
-        }
     }
+}
+@include theme(light) {
+	.file-match {
+		&__item {
+			background-color: $color-light-bg-1;
+			border-top: 1px solid $color-light-border;
+
+			&:hover {
+				background-color: $color-light-bg-4;
+				text-decoration: none;
+			}
+		}
+		&__code {
+			border-bottom-color: $color-light-border;
+		}
+	}
 }

@@ -49,7 +49,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .file-locations-tree {
         &__list {
             border-right: 1px solid $color-light-border;

@@ -47,7 +47,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .suggestion {
         background-color: $color-light-bg-1;
 

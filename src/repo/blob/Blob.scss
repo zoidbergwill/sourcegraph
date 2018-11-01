@@ -28,25 +28,10 @@
             min-width: 2rem;
             user-select: none;
             vertical-align: top;
-
-            @media screen and (prefers-color-scheme: dark) {
-                color: $gray-18;
-            }
-            @media screen and (prefers-color-scheme: light) {
-                color: $gray-05;
-            }
         }
 
         tr {
             transition: background 200ms ease-out;
-            &.selected {
-                @media screen and (prefers-color-scheme: light) {
-                    background: $gray-02;
-                }
-                @media screen and (prefers-color-scheme: dark) {
-                    background: $gray-21;
-                }
-            }
         }
 
         td.line,
@@ -76,13 +61,6 @@
                     display: inline-block;
                     width: 0;
                     outline: none;
-
-                    @media screen and (prefers-color-scheme: dark) {
-                        color: $gray-16;
-                    }
-                    @media screen and (prefers-color-scheme: light) {
-                        color: $gray-07;
-                    }
                 }
             }
         }
@@ -93,4 +71,54 @@
             }
         }
     }
+}
+
+@include theme(light) {
+	.blob {
+		&__code {
+			td.line {
+				color: $gray-05;
+			}
+
+			tr {
+				&.selected {
+					background: $gray-02;
+				}
+			}
+
+			td.code {
+				.blame-portal {
+					.blame {
+						color: $gray-07;
+					}
+				}
+			}
+		}
+	}
+
+}
+
+@include theme(dark) {
+	.blob {
+		&__code {
+			td.line {
+				color: $gray-18;
+			}
+
+			tr {
+				&.selected {
+					background: $gray-21;
+				}
+			}
+
+			td.code {
+				.blame-portal {
+					.blame {
+						color: $gray-16;
+					}
+				}
+			}
+		}
+	}
+
 }

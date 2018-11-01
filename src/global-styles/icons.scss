@@ -34,11 +34,11 @@ img.icon-inline,
 }
 
 // @sourcegraph/react-loading-spinner coloring
-@media screen and (prefers-color-scheme: light) {
+@include theme-root(light) {
     --loading-spinner-outer-color: #{rgba($body-color-light, 0.3)};
     --loading-spinner-inner-color: #{rgba($body-color-light, 1)};
 }
-@media screen and (prefers-color-scheme: dark) {
+@include theme-root(dark) {
     --loading-spinner-outer-color: #{rgba($body-color-dark, 0.3)};
     --loading-spinner-inner-color: #{rgba($body-color-dark, 1)};
 }

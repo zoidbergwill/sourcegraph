@@ -1,0 +1,51 @@
+// Mixin for scss to create theme colors
+// that support legacy theme and Mojave theme
+// Use with @include theme(theme-color) { rules }
+@mixin theme($theme) {
+	@if $theme == dark {
+		@media screen and (prefers-color-scheme: dark) {
+			@content;
+		}
+		.theme-#{$theme} {
+			@content;
+		}
+
+	} @else if $theme == light {
+		@media screen and (prefers-color-scheme: light) {
+			@content;
+		}
+		.theme-#{$theme} {
+			@content;
+		}
+	} @else {
+		@error "There is no theme named #{$theme}";
+	}
+}
+
+// Mixin for scss to create :root elements only when
+// @media queries are used in theme.
+// Use with @include theme-root(theme) { rules }
+@mixin theme-root($theme) {
+	@if $theme == dark {
+		@media screen and (prefers-color-scheme: dark) {
+			:root {
+				@content;
+			}
+		}
+		.theme-#{$theme} {
+			@content;
+		}
+
+	} @else if $theme == light {
+		@media screen and (prefers-color-scheme: light) {
+			:root {
+				@content;
+			}
+		}
+		.theme-#{$theme} {
+			@content;
+		}
+	} @else {
+		@error "There is no theme named #{$theme}";
+	}
+}

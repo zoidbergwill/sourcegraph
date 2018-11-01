@@ -93,7 +93,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .scope-page {
         &__row {
             border-color: $color-light-border;

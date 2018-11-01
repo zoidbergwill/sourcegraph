@@ -43,7 +43,7 @@
     }
 }
 
-@media screen and (prefers-color-scheme: light) {
+@include theme(light) {
     .overview-item {
         border-color: $color-light-border;
         &__header {

@@ -1,8 +1,7 @@
 @import 'bootstrap/scss/forms';
 @import 'bootstrap/scss/input-group';
 
-@media screen and (prefers-color-scheme: dark) {
-	:root {
+@include theme-root(dark) {
 		--input-bg: #0e121b;
 	    --input-disabled-bg: #2b3750;
 	    --input-border-color: #2b3750;
@@ -11,12 +10,10 @@
 	    --input-group-addon-color: #{$color-text-1};
 	    --input-group-addon-bg: #{$color-bg-5};
 	    --input-group-addon-border-color: #{$color-bg-5};
-	}
 
 }
 
-@media screen and (prefers-color-scheme: light) {
-	:root {
+@include theme-root(light) {
 		--input-bg: white;
 	    --input-disabled-bg: #e4e9f1;
 	    --input-border-color: #e4e9f1;
@@ -25,7 +22,6 @@
 	    --input-group-addon-color: #{$color-light-text-1};
 	    --input-group-addon-bg: #{$color-light-bg-4};
 	    --input-group-addon-border-color: #{$color-light-bg-4};
-	}
 
 }
 
