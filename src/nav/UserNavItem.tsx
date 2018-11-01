@@ -17,6 +17,7 @@ interface Props {
 
 interface State {
     isOpen: boolean
+    supportsSystemTheme: boolean
 }
 
 /**
@@ -24,16 +25,34 @@ interface State {
  * authenticated viewers.
  */
 export class UserNavItem extends React.PureComponent<Props, State> {
-    public state: State = { isOpen: false }
+    public state: State = { isOpen: false, supportsSystemTheme: false }
 
     public componentDidUpdate(prevProps: Props): void {
         // Close dropdown after clicking on a dropdown item.
         if (this.state.isOpen && this.props.location !== prevProps.location) {
             this.setState({ isOpen: false })
         }
-    }
 
+        if (
+            window.matchMedia('(prefers-color-scheme: light)').matches ||
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+        ) {
+            console.log('System theme is supported. Showing system theme option')
+            this.setState({ supportsSystemTheme: true })
+        } else {
+            this.setState({ supportsSystemTheme: false })
+        }
+    }
+    public supportsMojaveSystemTheme = () => {}
     public render(): JSX.Element | null {
+        let systemThemeButton
+        if (this.state.supportsSystemTheme) {
+            systemThemeButton = (
+                <button type="button" className="dropdown-item e2e-user-nav-item__theme">
+                    Use system theme
+                </button>
+            )
+        }
         return (
             <ButtonDropdown isOpen={this.state.isOpen} toggle={this.toggleIsOpen} className="nav-link py-0">
                 <DropdownToggle
@@ -76,6 +95,7 @@ export class UserNavItem extends React.PureComponent<Props, State> {
                     >
                         Use {this.props.isLightTheme ? 'dark' : 'light'} theme
                     </button>
+                    {systemThemeButton}
                     <Link to="/help" className="dropdown-item">
                         Help
                     </Link>

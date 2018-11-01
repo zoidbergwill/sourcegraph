@@ -83,7 +83,12 @@ interface SourcegraphWebAppState
     /**
      * Whether the light theme is enabled or not
      */
-    isLightTheme: boolean 
+    isLightTheme: boolean
+
+    /**
+     * Theme checker. Set theme to light, dark, or macOS Mojave system
+     */
+    sourcegraphTheme: 'dark' | 'light' | 'system'
 
     /**
      * Whether the user is on MainPage and therefore not logged in
@@ -97,6 +102,9 @@ interface SourcegraphWebAppState
 }
 
 const LIGHT_THEME_LOCAL_STORAGE_KEY = 'light-theme'
+
+// TODO: Replace Light Theme code with this
+const SOURCEGRAPH_THEME_LOCAL_STORAGE_KEY = 'light'
 
 /** A fallback configuration subject that can be constructed synchronously at initialization time. */
 const SITE_SUBJECT_NO_ADMIN: Pick<GQL.IConfigurationSubject, 'id' | 'viewerCanAdminister'> = {
@@ -113,6 +121,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
         const extensions = createExtensionsContextController()
         this.state = {
             isLightTheme: localStorage.getItem(LIGHT_THEME_LOCAL_STORAGE_KEY) !== 'false',
+            sourcegraphTheme: 'system',
             navbarSearchQuery: '',
             configurationCascade: { subjects: null, merged: null },
             extensions,
@@ -178,19 +187,21 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
                 err => console.error(err)
             )
         )
-		if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-			console.log("it's light")
-			this.setState({ isLightTheme: true })
-			// document.body.classList.remove('theme-dark')
-			// document.body.classList.add('theme-light')
-		} else if  (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-			console.log("it's dark")
-			this.setState({ isLightTheme: false })
-			// document.body.classList.remove('theme-light')
-			// document.body.classList.add('theme-dark')
-		} else {
-			console.log("it ain't it cheif")
-		}
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            console.log("it's light")
+            document.body.classList.remove('theme')
+            document.body.classList.remove('theme-light')
+            document.body.classList.remove('theme-dark')
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            console.log("it's dark")
+            document.body.classList.remove('theme')
+            document.body.classList.remove('theme-light')
+            document.body.classList.remove('theme-dark')
+        } else {
+            console.log("Mojave Theme Support – This ain't it chief")
+            // Revert theme to light by default
+            this.setState({ sourcegraphTheme: 'light' })
+        }
     }
 
     public componentWillUnmount(): void {
@@ -205,12 +216,17 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
         if (this.state.isMainPage && this.state.isLightTheme) {
             document.body.classList.remove('theme-light')
             document.body.classList.add('theme-dark')
+        } else if (this.state.sourcegraphTheme === 'system') {
+            document.body.classList.remove('theme')
+            document.body.classList.remove('theme-light')
+            document.body.classList.remove('theme-dark')
+            console.log('Using system theme')
         } else {
             localStorage.setItem(LIGHT_THEME_LOCAL_STORAGE_KEY, this.state.isLightTheme + '')
             document.body.classList.toggle('theme-light', this.state.isLightTheme)
             document.body.classList.toggle('theme-dark', !this.state.isLightTheme)
+            console.log('Using user theme')
         }
-
     }
 
     public render(): React.ReactFragment | null {
@@ -293,7 +309,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             }
         )
     }
-	private useSystemTheme = () => {
+    private useSystemTheme = () => {
         this.setState(
             state => ({ isLightTheme: null }),
             () => {
