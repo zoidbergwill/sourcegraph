@@ -43,7 +43,6 @@ export class UserNavItem extends React.PureComponent<Props, State> {
             this.setState({ supportsSystemTheme: false })
         }
     }
-    public supportsMojaveSystemTheme = () => {}
     public render(): JSX.Element | null {
         let systemThemeButton
         if (this.state.supportsSystemTheme) {

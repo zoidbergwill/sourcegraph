@@ -223,9 +223,15 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             console.log('Using system theme')
         } else {
             localStorage.setItem(LIGHT_THEME_LOCAL_STORAGE_KEY, this.state.isLightTheme + '')
-            document.body.classList.toggle('theme-light', this.state.isLightTheme)
-            document.body.classList.toggle('theme-dark', !this.state.isLightTheme)
-            console.log('Using user theme')
+            if (this.state.sourcegraphTheme === 'light') {
+                document.body.classList.remove('theme-dark')
+                document.body.classList.add('theme-light')
+                console.log('Set light theme')
+            } else if (this.state.sourcegraphTheme === 'dark') {
+                document.body.classList.remove('theme-light')
+                document.body.classList.add('theme-dark')
+                console.log('Set dark theme')
+            }
         }
     }
 
@@ -302,20 +308,17 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
     }
 
     private onThemeChange = () => {
-        this.setState(
-            state => ({ isLightTheme: !state.isLightTheme }),
-            () => {
-                eventLogger.log(this.state.isLightTheme ? 'LightThemeClicked' : 'DarkThemeClicked')
-            }
-        )
+        if (this.state.sourcegraphTheme === 'system' || this.state.sourcegraphTheme === 'dark') {
+            this.setState({ sourcegraphTheme: 'light' })
+            eventLogger.log(this.state.sourcegraphTheme)
+        } else {
+            this.setState({ sourcegraphTheme: 'dark' })
+            eventLogger.log(this.state.sourcegraphTheme)
+        }
     }
     private useSystemTheme = () => {
-        this.setState(
-            state => ({ isLightTheme: null }),
-            () => {
-                eventLogger.log(this.state.isLightTheme ? 'LightThemeClicked' : 'DarkThemeClicked')
-            }
-        )
+        this.setState({ sourcegraphTheme: 'system' })
+        eventLogger.log(this.state.sourcegraphTheme)
     }
 
     private onMainPage = (mainPage: boolean) => {
