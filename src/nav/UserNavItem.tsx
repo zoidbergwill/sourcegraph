@@ -55,23 +55,30 @@ export class UserNavItem extends React.PureComponent<Props, State> {
                     className="dropdown-item e2e-user-nav-item__theme"
                     onClick={this.props.useSystemTheme}
                 >
-                    Use system theme
+                    Use macOS system theme
                 </button>
             )
         }
 
         let changeThemeButton
-        if (this.props.sourcegraphTheme === 'dark' || this.props.sourcegraphTheme === 'system') {
+        if (this.props.sourcegraphTheme === 'dark') {
             changeThemeButton = (
                 <button type="button" className="dropdown-item e2e-user-nav-item__theme" onClick={this.onThemeChange}>
-                    Use light theme
+                    Use Sourcegraph light theme
                 </button>
             )
         }
         if (this.props.sourcegraphTheme === 'light') {
             changeThemeButton = (
                 <button type="button" className="dropdown-item e2e-user-nav-item__theme" onClick={this.onThemeChange}>
-                    Use dark theme
+                    Use Sourcegraph dark theme
+                </button>
+            )
+        }
+        if (this.props.sourcegraphTheme === 'system') {
+            changeThemeButton = (
+                <button type="button" className="dropdown-item e2e-user-nav-item__theme" onClick={this.onThemeChange}>
+                    Use Sourcegraph light theme
                 </button>
             )
         }

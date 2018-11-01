@@ -320,7 +320,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
     }
     private useSystemTheme = () => {
         this.setState({ sourcegraphTheme: 'system' })
-        console.log('Using systemtheme from component')
+        console.log('Using systemtheme from compoent')
         eventLogger.log(this.state.sourcegraphTheme)
     }
 
