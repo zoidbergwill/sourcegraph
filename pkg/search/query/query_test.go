@@ -241,6 +241,61 @@ func TestMinimalRepoSet(t *testing.T) {
 	}
 }
 
+func TestRepoQuery(t *testing.T) {
+	cases := map[string]string{
+		"r:":                                  "{bar baz foo}",
+		"r:b":                                 "{bar baz}",
+		"r:b r:a":                             "{bar baz}",
+		"r:b -r:baz":                          "{bar}",
+		"-r:f":                                "{bar baz}",
+		"r:foo":                               "{foo}",
+		"r:foo r:baz":                         "{}",
+		"foo -(r:foo r:baz)":                  "",
+		"foo r:ba -(r:foo or r:baz)":          "{bar}",
+		"foo r:ba -(r:foo or r:baz or hello)": "{bar}",
+		"foo r:ba -(r:foo or hello)":          "{bar baz}",
+		"foo -(r:baz hello)":                  "",
+
+		"foo r:ba -((r:foo or hello) world)": "{bar baz}",
+		"foo r:ba -((r:foo or hello) r:foo)": "{bar baz}",
+
+		"foo -(-(r:bar hello))": "{bar}",
+		"foo -(-(hello))":       "",
+		"foo -(r:bar hello)":    "",
+		"foo -(hello)":          "",
+
+		"foo r:b -(-(r:bar hello))": "{bar}",
+		"foo r:b -(-(hello))":       "{bar baz}",
+		"foo r:b -(r:bar hello)":    "{bar baz}",
+		"foo r:b -(hello)":          "{bar baz}",
+
+		// baz is still allowed since it can have matches in documents without
+		// hello.
+		"foo r:ba -(r:baz hello)":    "{bar baz}",
+		"r:foo test":                 "{foo}",
+		"r:foo test -hello":          "{foo}",
+		"(r:ba test (r:b r:a -r:z))": "{bar}",
+
+		// Our only case where a reposet is a child of a not.
+		"bar -(r:foo test)": "",
+	}
+	for qStr, want := range cases {
+		q, err := Parse(qStr)
+		if err != nil {
+			t.Fatal(err)
+		}
+		q = Simplify(q)
+		rq := RepoQuery(q)
+		fmt.Printf("%s\n%s\n%s\n\n", q, fmt.Sprintf(rq.Query(PrintfBindVar{}), rq.Args()...), want)
+	}
+}
+
+type PrintfBindVar struct{}
+
+func (PrintfBindVar) BindVar(i int) string {
+	return "%q"
+}
+
 func TestVisitAtoms(t *testing.T) {
 	in := NewAnd(&Substring{}, &Repo{}, &Not{&Const{}})
 	count := 0

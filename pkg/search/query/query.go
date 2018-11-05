@@ -22,6 +22,8 @@ import (
 	"regexp/syntax"
 	"sort"
 	"strings"
+
+	"github.com/keegancsmith/sqlf"
 )
 
 var _ = log.Println
@@ -570,6 +572,89 @@ func ExpandRepo(q Q, listFn func(include, exclude []string) (map[string]bool, er
 		return q
 	})
 	return Simplify(q), retErr
+}
+
+type SQL struct {
+	*sqlf.Query
+}
+
+func (s *SQL) String() string {
+	return s.Query.Query(sqlf.SimpleBindVar)
+}
+
+type flipConstant struct{ Value bool }
+
+func (f *flipConstant) String() string {
+	return fmt.Sprintf("%v", f.Value)
+}
+
+func RepoQuery(q Q) *sqlf.Query {
+	queries := func(qs []Q) []*sqlf.Query {
+		x := make([]*sqlf.Query, 0, len(qs))
+		for _, q := range qs {
+			x = append(x, q.(*SQL).Query)
+		}
+		return x
+	}
+
+	q = Map(q, func(q Q) Q {
+		switch c := q.(type) {
+		case *Repo:
+		case *Const:
+		case *And:
+		case *Or:
+
+		case *Type:
+			return c.Child
+		case *Not:
+			return Map(q, func(q Q) Q {
+				if c, ok := q.(*flipConstant); ok {
+					c.Value = !c.Value
+				}
+				return q
+			})
+
+		default:
+			return &flipConstant{Value: true}
+		}
+		return q
+	})
+
+	q = Map(q, func(q Q) Q {
+		if c, ok := q.(*flipConstant); ok {
+			return &Const{Value: c.Value}
+		}
+		return q
+	})
+
+	q = Simplify(q)
+
+	q = Map(q, func(q Q) Q {
+		switch c := q.(type) {
+		case *And:
+			return &SQL{sqlf.Sprintf("(%s)", sqlf.Join(queries(c.Children), "AND"))}
+
+		case *Or:
+			return &SQL{sqlf.Sprintf("(%s)", sqlf.Join(queries(c.Children), "OR"))}
+
+		case *Not:
+			return &SQL{sqlf.Sprintf("(NOT %s)", c.Child.(*SQL).Query)}
+
+		case *Const:
+			if c.Value {
+				return &SQL{sqlf.Sprintf("(1=1)")}
+			}
+			return &SQL{sqlf.Sprintf("(1<>1)")}
+
+		case *Repo:
+			return &SQL{sqlf.Sprintf("name LIKE %s", "%"+c.Pattern+"%")}
+
+		default:
+			panic("unexpected")
+		}
+	})
+
+	return q.(*SQL).Query
 }
 
 // universe represents the set of all repositories. It is used by
