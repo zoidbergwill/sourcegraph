@@ -202,6 +202,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             document.body.classList.remove('theme')
             document.body.classList.remove('theme-light')
             document.body.classList.remove('theme-dark')
+            this.setState(state => ({ isLightTheme: false, sourcegraphTheme: 'system' }))
             localStorage.setItem(
                 LIGHT_THEME_LOCAL_STORAGE_KEY,
                 window.matchMedia('(prefers-color-scheme: dark)').matches + ''
@@ -232,6 +233,10 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             document.body.classList.remove('theme')
             document.body.classList.remove('theme-light')
             document.body.classList.remove('theme-dark')
+            localStorage.setItem(
+                LIGHT_THEME_LOCAL_STORAGE_KEY,
+                window.matchMedia('(prefers-color-scheme: dark)').matches ? 'false' : 'true'
+            )
         } else {
             localStorage.setItem(LIGHT_THEME_LOCAL_STORAGE_KEY, this.state.isLightTheme + '')
             document.body.classList.toggle('theme-light', this.state.isLightTheme)
