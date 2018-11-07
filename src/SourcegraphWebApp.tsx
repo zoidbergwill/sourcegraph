@@ -192,15 +192,26 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             document.body.classList.remove('theme')
             document.body.classList.remove('theme-light')
             document.body.classList.remove('theme-dark')
+            this.setState(state => ({ isLightTheme: true, sourcegraphTheme: 'system' }))
+            localStorage.setItem(
+                LIGHT_THEME_LOCAL_STORAGE_KEY,
+                window.matchMedia('(prefers-color-scheme: light)').matches + ''
+            )
         } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             console.log("it's dark")
             document.body.classList.remove('theme')
             document.body.classList.remove('theme-light')
             document.body.classList.remove('theme-dark')
+            localStorage.setItem(
+                LIGHT_THEME_LOCAL_STORAGE_KEY,
+                window.matchMedia('(prefers-color-scheme: dark)').matches + ''
+            )
+            this.setState(state => ({ isLightTheme: false, sourcegraphTheme: 'system' }))
         } else {
             console.log("Mojave Theme Support – This ain't it chief")
             // Revert theme to light by default
             this.setState({ sourcegraphTheme: 'light' })
+            localStorage.setItem(LIGHT_THEME_LOCAL_STORAGE_KEY, this.state.isLightTheme + '')
         }
     }
 
@@ -212,6 +223,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
     }
 
     public componentDidUpdate(): void {
+        console.log('localstorage', localStorage.getItem(LIGHT_THEME_LOCAL_STORAGE_KEY))
         // Always show MainPage in dark theme look
         if (this.state.isMainPage && this.state.isLightTheme) {
             document.body.classList.remove('theme-light')
@@ -220,18 +232,12 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             document.body.classList.remove('theme')
             document.body.classList.remove('theme-light')
             document.body.classList.remove('theme-dark')
-            console.log('Using system theme')
         } else {
             localStorage.setItem(LIGHT_THEME_LOCAL_STORAGE_KEY, this.state.isLightTheme + '')
-            if (this.state.sourcegraphTheme === 'light') {
-                document.body.classList.remove('theme-dark')
-                document.body.classList.add('theme-light')
-                console.log('Set light theme')
-            } else if (this.state.sourcegraphTheme === 'dark') {
-                document.body.classList.remove('theme-light')
-                document.body.classList.add('theme-dark')
-                console.log('Set dark theme')
-            }
+            document.body.classList.toggle('theme-light', this.state.isLightTheme)
+            console.log('Set light theme')
+            document.body.classList.toggle('theme-dark', !this.state.isLightTheme)
+            console.log('Set dark theme')
         }
     }
 
@@ -310,16 +316,19 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
     }
 
     private onThemeChange = () => {
-        if (this.state.sourcegraphTheme === 'system' || this.state.sourcegraphTheme === 'dark') {
-            this.setState({ sourcegraphTheme: 'light' })
-            eventLogger.log(this.state.sourcegraphTheme)
-        } else {
-            this.setState({ sourcegraphTheme: 'dark' })
-            eventLogger.log(this.state.sourcegraphTheme)
-        }
+        this.setState(
+            state => ({ isLightTheme: !state.isLightTheme, sourcegraphTheme: state.isLightTheme ? 'light' : 'dark' }),
+            () => {
+                eventLogger.log(this.state.isLightTheme ? 'LightThemeClicked' : 'DarkThemeClicked')
+            }
+        )
     }
     private useSystemTheme = () => {
-        this.setState({ sourcegraphTheme: 'system' })
+        console.log('windowsmatching dark: ', window.matchMedia('(prefers-color-scheme: dark)').matches)
+        this.setState({
+            sourcegraphTheme: 'system',
+            isLightTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? false : true,
+        })
         console.log('Using systemtheme from compoent')
         eventLogger.log(this.state.sourcegraphTheme)
     }
