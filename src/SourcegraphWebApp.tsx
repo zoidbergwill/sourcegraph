@@ -329,6 +329,10 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             sourcegraphTheme: 'system',
             isLightTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? false : true,
         })
+        localStorage.setItem(
+            LIGHT_THEME_LOCAL_STORAGE_KEY,
+            window.matchMedia('(prefers-color-scheme: dark)').matches ? 'false' : 'true'
+        )
         console.log('Using systemtheme from compoent')
         eventLogger.log(this.state.sourcegraphTheme)
     }
