@@ -161,7 +161,7 @@ function createExtensionHandle(initData: InitData, connection: Connection): type
         internal: {
             sync,
             updateContext: updates => context.updateContext(updates),
-            sourcegraphURL: new URI(initData.sourcegraphURL),
+            sourcegraphURL: URI.parse(initData.sourcegraphURL),
             clientApplication: initData.clientApplication,
         },
     }
