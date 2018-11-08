@@ -1,7 +1,7 @@
 import { FileSystem, FileType } from 'sourcegraph'
 import { createProxyAndHandleRequests } from '../../common/proxy'
-import { URI } from '../../common/uri'
 import { Connection } from '../../protocol/jsonrpc2/connection'
+import { URI } from '../../common/uri'
 
 /** @internal */
 export interface ClientFileSystemAPI {
