@@ -14,6 +14,7 @@ import { ConfiguredExtension, isExtensionEnabled } from '../extensions/extension
 import { ExtensionManifest } from '../schema/extension.schema'
 import { Settings, SettingsCascade, SettingsSubject } from '../settings'
 import { registerBuiltinClientCommands, updateConfiguration } from './clientCommands'
+import { getFileSystem } from './fileSystem'
 import { log } from './log'
 
 /**
@@ -127,6 +128,7 @@ export function createController<S extends SettingsSubject, C extends Settings>(
             createMessageTransports: () => createMessageTransports(extension),
         }),
         environmentFilter,
+        getFileSystem: uri => getFileSystem(uri, (query, vars) => context.queryGraphQL(query, vars, true)),
     })
 
     // Apply trace settings.

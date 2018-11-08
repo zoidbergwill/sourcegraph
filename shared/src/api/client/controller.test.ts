@@ -22,6 +22,9 @@ const create = (environment?: Environment): TestController => {
                 throw new Error('connection is not used in unit test')
             },
         }),
+        getFileSystem: () => {
+            throw new Error('file system is not used in unit test')
+        },
     })
     if (environment) {
         controller.setEnvironment(environment)
@@ -30,6 +33,7 @@ const create = (environment?: Environment): TestController => {
 }
 
 const FIXTURE_ENVIRONMENT: Environment<any, any> = {
+    roots: [],
     visibleTextDocuments: [{ uri: 'file:///f', languageId: 'l', text: '' }],
     extensions: [{ id: 'x' }],
     configuration: {},
