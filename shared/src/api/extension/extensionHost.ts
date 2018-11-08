@@ -1,6 +1,7 @@
 import { Subscription } from 'rxjs'
 import * as sourcegraph from 'sourcegraph'
 import { createProxy, handleRequests } from '../common/proxy'
+import { URI } from '../common/uri'
 import { Connection, createConnection, Logger, MessageTransports } from '../protocol/jsonrpc2/connection'
 import { createWebWorkerMessageTransports } from '../protocol/jsonrpc2/transports/webWorker'
 import { ExtCommands } from './api/commands'
@@ -15,7 +16,6 @@ import { Location } from './types/location'
 import { Position } from './types/position'
 import { Range } from './types/range'
 import { Selection } from './types/selection'
-import { URI } from './types/uri'
 
 const consoleLogger: Logger = {
     error(message: string): void {
