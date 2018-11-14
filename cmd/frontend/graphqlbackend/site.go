@@ -123,7 +123,7 @@ func (r *siteConfigurationResolver) EffectiveContents(ctx context.Context) (stri
 	if err := backend.CheckCurrentUserIsSiteAdmin(ctx); err != nil {
 		return "", err
 	}
-	return globals.ConfigurationServerFrontendOnly.Raw(), nil
+	return globals.ConfigurationServerFrontendOnly.Raw().Site, nil
 }
 
 func (r *siteConfigurationResolver) ValidationMessages(ctx context.Context) ([]string, error) {
@@ -131,7 +131,7 @@ func (r *siteConfigurationResolver) ValidationMessages(ctx context.Context) ([]s
 	if err != nil {
 		return nil, err
 	}
-	return conf.Validate(contents)
+	return conf.ValidateSite(contents)
 }
 
 func (r *siteConfigurationResolver) CanUpdate() bool {
@@ -146,14 +146,18 @@ func (r *siteConfigurationResolver) Source() string {
 }
 
 func (r *schemaResolver) UpdateSiteConfiguration(ctx context.Context, args *struct {
-	Input string
+	LastID *int
+	Input  string
 }) (bool, error) {
+	// TODO(slimsag): UnifiedConfiguration: use LastID
 	// 🚨 SECURITY: The site configuration contains secret tokens and credentials,
 	// so only admins may view it.
 	if err := backend.CheckCurrentUserIsSiteAdmin(ctx); err != nil {
 		return false, err
 	}
-	if err := globals.ConfigurationServerFrontendOnly.Write(args.Input); err != nil {
+	prev := globals.ConfigurationServerFrontendOnly.Raw()
+	prev.Site = args.Input
+	if err := globals.ConfigurationServerFrontendOnly.Write(prev); err != nil {
 		return false, err
 	}
 	return globals.ConfigurationServerFrontendOnly.NeedServerRestart(), nil

@@ -7,16 +7,15 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sourcegraph/jsonx"
-	"github.com/sourcegraph/sourcegraph/pkg/conf/parse"
-	"github.com/sourcegraph/sourcegraph/schema"
+	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
 )
 
 // ConfigurationSource provides direct access to read and write to the
 // "raw" configuration.
 type ConfigurationSource interface {
-	Write(data string) error
-	Read() (string, error)
+	// Write updates the configuration. The Deployment field is ignored.
+	Write(data conftypes.RawUnifiedConfiguration) error
+	Read() (conftypes.RawUnifiedConfiguration, error)
 	FilePath() string
 }
 
@@ -51,16 +50,16 @@ func NewServer(source ConfigurationSource) *Server {
 }
 
 // Raw returns the raw text of the configuration file.
-func (s *Server) Raw() string {
+func (s *Server) Raw() conftypes.RawUnifiedConfiguration {
 	return s.store.Raw()
 }
 
 // Write writes the JSON config file to the config file's path. If the JSON configuration is
 // invalid, an error is returned.
-func (s *Server) Write(input string) error {
+func (s *Server) Write(input conftypes.RawUnifiedConfiguration) error {
 	// Parse the configuration so that we can diff it (this also validates it
 	// is proper JSON).
-	_, err := parse.ParseConfigEnvironment(input)
+	_, err := ParseConfig(input)
 	if err != nil {
 		return err
 	}
@@ -80,6 +79,8 @@ func (s *Server) Write(input string) error {
 	return nil
 }
 
+// TODO(slimsag): UnifiedConfiguration
+/*
 // Edit invokes the provided function to compute edits to the site
 // configuration. It then applies and writes them.
 //
@@ -94,7 +95,7 @@ func (s *Server) Edit(computeEdits func(current *schema.SiteConfiguration, raw s
 	raw := s.store.Raw()
 
 	// Compute edits.
-	edits, err := computeEdits(current, raw)
+	edits, err := computeEdits(&current.SiteConfiguration, raw)
 	if err != nil {
 		return errors.Wrap(err, "computeEdits")
 	}
@@ -115,6 +116,7 @@ func (s *Server) Edit(computeEdits func(current *schema.SiteConfiguration, raw s
 
 	return nil
 }
+*/
 
 // Start initalizes the server instance.
 func (s *Server) Start() {
@@ -170,7 +172,7 @@ func (s *Server) updateFromDisk() error {
 	}
 
 	// Update global "needs restart" state.
-	if parse.NeedRestartToApply(configChange.Old, configChange.New) {
+	if NeedRestartToApply(configChange.Old, configChange.New) {
 		s.markNeedServerRestart()
 	}
 

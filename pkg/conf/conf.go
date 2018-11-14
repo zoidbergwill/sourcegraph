@@ -7,7 +7,22 @@ import (
 	"path/filepath"
 
 	"github.com/sourcegraph/jsonx"
+	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
+	"github.com/sourcegraph/sourcegraph/schema"
 )
+
+// UnifiedConfiguration represents the overall Sourcegraph configuration from
+// various sources:
+//
+// - The core configuration, from the database (from the management console).
+// - The site configuration, from the database (from the site-admin panel).
+// - Deployment configuration, from the frontend (e.g. which gitservers to talk to).
+//
+type UnifiedConfiguration struct {
+	schema.SiteConfiguration
+	Core       schema.CoreSiteConfiguration
+	Deployment conftypes.DeploymentConfiguration
+}
 
 type configurationMode int
 
@@ -51,10 +66,7 @@ var (
 
 func init() {
 	clientStore := NewStore()
-	defaultClient = &client{
-		store:   clientStore,
-		fetcher: httpFetcher{},
-	}
+	defaultClient = &client{store: clientStore}
 
 	mode := getMode()
 
@@ -63,15 +75,21 @@ func init() {
 	if mode == modeTest {
 		close(configurationServerFrontendOnlyInitialized)
 
+		// TODO(slimsag): UnifiedConfiguration
+
 		// Seed the client store with a dummy configuration for test cases.
 		dummyConfig := `
 		{
 			// This is an empty configuration to run test cases.
 		}`
 
-		_, err := clientStore.MaybeUpdate(dummyConfig)
+		_, err := clientStore.MaybeUpdate(conftypes.RawUnifiedConfiguration{
+			Core:       "{}",
+			Site:       "{}",
+			Deployment: conftypes.DeploymentConfiguration{},
+		})
 		if err != nil {
-			log.Fatalf("received error when setting up the store for the default client durig test, err :%s", err)
+			log.Fatalf("received error when setting up the store for the default client during test, err :%s", err)
 		}
 
 		return
@@ -102,9 +120,6 @@ func InitConfigurationServerFrontendOnly(source ConfigurationSource) *Server {
 
 	server := NewServer(source)
 	server.Start()
-
-	// Install the passthrough fetcher for defaultClient in order to avoid deadlock issues.
-	defaultClient.fetcher = passthroughFetcherFrontendOnly{}
 
 	close(configurationServerFrontendOnlyInitialized)
 

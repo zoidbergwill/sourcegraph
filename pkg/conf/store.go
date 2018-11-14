@@ -5,19 +5,18 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sourcegraph/sourcegraph/pkg/conf/parse"
-	"github.com/sourcegraph/sourcegraph/schema"
+	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
 )
 
 // Store manages the in-memory storage, access,
 // and updating of the site configuration in a threadsafe manner.
 type Store struct {
 	configMu  sync.RWMutex
-	lastValid *schema.SiteConfiguration
-	mock      *schema.SiteConfiguration
+	lastValid *UnifiedConfiguration
+	mock      *UnifiedConfiguration
 
 	rawMu sync.RWMutex
-	raw   string
+	raw   conftypes.RawUnifiedConfiguration
 
 	ready chan struct{}
 	once  sync.Once
@@ -32,7 +31,7 @@ func NewStore() *Store {
 
 // LastValid returns the last valid site configuration that this
 // store was updated with.
-func (s *Store) LastValid() *schema.SiteConfiguration {
+func (s *Store) LastValid() *UnifiedConfiguration {
 	s.WaitUntilInitialized()
 
 	s.configMu.RLock()
@@ -45,8 +44,8 @@ func (s *Store) LastValid() *schema.SiteConfiguration {
 	return s.lastValid
 }
 
-// Raw returns the last raw JSON string that this store was updated with.
-func (s *Store) Raw() string {
+// Raw returns the last raw configuration that this store was updated with.
+func (s *Store) Raw() conftypes.RawUnifiedConfiguration {
 	s.WaitUntilInitialized()
 
 	s.rawMu.RLock()
@@ -56,7 +55,7 @@ func (s *Store) Raw() string {
 
 // Mock sets up mock data for the site configuration. It uses the configuration
 // mutex, to avoid possible races between test code and possible config watchers.
-func (s *Store) Mock(mockery *schema.SiteConfiguration) {
+func (s *Store) Mock(mockery *UnifiedConfiguration) {
 	s.configMu.Lock()
 	defer s.configMu.Unlock()
 
@@ -66,8 +65,8 @@ func (s *Store) Mock(mockery *schema.SiteConfiguration) {
 
 type UpdateResult struct {
 	Changed bool
-	Old     *schema.SiteConfiguration
-	New     *schema.SiteConfiguration
+	Old     *UnifiedConfiguration
+	New     *UnifiedConfiguration
 }
 
 // MaybeUpdate attempts to update the store with the supplied rawConfig.
@@ -78,7 +77,7 @@ type UpdateResult struct {
 //
 // configChange is defined iff the cache was actually udpated.
 // TODO@ggilmore: write a less-vague description
-func (s *Store) MaybeUpdate(rawConfig string) (UpdateResult, error) {
+func (s *Store) MaybeUpdate(rawConfig conftypes.RawUnifiedConfiguration) (UpdateResult, error) {
 	s.rawMu.Lock()
 	defer s.rawMu.Unlock()
 
@@ -91,13 +90,13 @@ func (s *Store) MaybeUpdate(rawConfig string) (UpdateResult, error) {
 		New:     s.lastValid,
 	}
 
-	if s.raw == rawConfig {
+	if s.raw.Equal(rawConfig) {
 		return result, nil
 	}
 
 	s.raw = rawConfig
 
-	newConfig, err := parse.ParseConfigEnvironment(rawConfig)
+	newConfig, err := ParseConfig(rawConfig)
 	if err != nil {
 		return result, errors.Wrap(err, "when parsing rawConfig during update")
 	}

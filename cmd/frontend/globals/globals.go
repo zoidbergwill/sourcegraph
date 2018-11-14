@@ -2,12 +2,11 @@
 package globals
 
 import (
-	"io/ioutil"
 	"net/url"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/sourcegraph/sourcegraph/pkg/conf"
+	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
 )
 
 // ExternalURL is the fully-resolved, externally accessible frontend URL.
@@ -25,17 +24,23 @@ type configurationSource struct {
 	configFilePath string
 }
 
-func (c configurationSource) Read() (string, error) {
-	data, err := ioutil.ReadFile(c.FilePath())
-	if err != nil {
-		return "", errors.Wrapf(err, "unable to read config file from %q", c.FilePath())
-	}
+func (c configurationSource) Read() (conftypes.RawUnifiedConfiguration, error) {
+	// TODO(slimsag): UnifiedConfiguration
+	return conftypes.RawUnifiedConfiguration{}, nil
+	/*
+		data, err := ioutil.ReadFile(c.FilePath())
+		if err != nil {
+			return "", errors.Wrapf(err, "unable to read config file from %q", c.FilePath())
+		}
 
-	return string(data), err
+		return string(data), err
+	*/
 }
 
-func (c configurationSource) Write(input string) error {
-	return ioutil.WriteFile(c.FilePath(), []byte(input), 0600)
+func (c configurationSource) Write(input conftypes.RawUnifiedConfiguration) error {
+	// TODO(slimsag): UnifiedConfiguration
+	//return ioutil.WriteFile(c.FilePath(), []byte(input), 0600)
+	return nil
 }
 
 func (c configurationSource) FilePath() string {

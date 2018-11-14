@@ -16,7 +16,6 @@ import (
 
 	"github.com/keegancsmith/tmpfriend"
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/db"
-	"github.com/sourcegraph/sourcegraph/cmd/frontend/db/dbconn"
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/globals"
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/hooks"
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/internal/app/pkg/updatecheck"
@@ -25,6 +24,7 @@ import (
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/internal/pkg/discussions/mailreply"
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/internal/pkg/siteid"
 	"github.com/sourcegraph/sourcegraph/pkg/conf"
+	"github.com/sourcegraph/sourcegraph/pkg/dbconn"
 	"github.com/sourcegraph/sourcegraph/pkg/debugserver"
 	"github.com/sourcegraph/sourcegraph/pkg/env"
 	"github.com/sourcegraph/sourcegraph/pkg/processrestart"
@@ -44,11 +44,11 @@ var (
 	httpsAddr        = env.Get("SRC_HTTPS_ADDR", ":3443", "HTTPS (TLS) listen address for app and HTTP API. Only used if manual tls cert and key are specified.")
 	httpAddrInternal = env.Get("SRC_HTTP_ADDR_INTERNAL", ":3090", "HTTP listen address for internal HTTP API. This should never be exposed externally, as it lacks certain authz checks.")
 
-	externalURL             = conf.GetTODO().ExternalURL
+	externalURL             = conf.Get().Core.ExternalURL
 	disableBrowserExtension = conf.GetTODO().DisableBrowserExtension
 
-	tlsCert = conf.GetTODO().TlsCert
-	tlsKey  = conf.GetTODO().TlsKey
+	tlsCert = conf.Get().Core.TlsCert
+	tlsKey  = conf.Get().Core.TlsKey
 
 	// dev browser browser extension ID. You can find this by going to chrome://extensions
 	devExtension = "chrome-extension://bmfbcejdknlknpncfpeloejonjoledha"
@@ -154,7 +154,7 @@ func Main() error {
 	}
 
 	tlsCertAndKey := tlsCert != "" && tlsKey != ""
-	useTLS := httpsAddr != "" && (tlsCertAndKey || (globals.ExternalURL.Scheme == "https" && conf.GetTODO().TlsLetsencrypt != "off"))
+	useTLS := httpsAddr != "" && (tlsCertAndKey || (globals.ExternalURL.Scheme == "https" && conf.Get().Core.TlsLetsencrypt != "off"))
 	if useTLS && globals.ExternalURL.Scheme == "http" {
 		log15.Warn("TLS is enabled but app url scheme is http", "externalURL", globals.ExternalURL)
 	}
@@ -204,7 +204,7 @@ func Main() error {
 		l, err := net.Listen("tcp", httpsAddr)
 		if err != nil {
 			// Fatal if we manually specified TLS or enforce lets encrypt
-			if tlsCertAndKey || conf.GetTODO().TlsLetsencrypt == "on" {
+			if tlsCertAndKey || conf.Get().Core.TlsLetsencrypt == "on" {
 				log.Fatalf("Could not bind to address %s: %v", httpsAddr, err)
 			} else {
 				log15.Warn("Failed to bind to HTTPS port, TLS disabled", "address", httpsAddr, "error", err)

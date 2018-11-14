@@ -7,6 +7,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/sergi/go-diff/diffmatchpatch"
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/external/auth"
+	"github.com/sourcegraph/sourcegraph/pkg/conf"
 	"github.com/sourcegraph/sourcegraph/schema"
 	"golang.org/x/oauth2"
 )
@@ -17,7 +18,7 @@ func Test_parseConfig(t *testing.T) {
 	spew.Config.SpewKeys = true
 
 	type args struct {
-		cfg *schema.SiteConfiguration
+		cfg *conf.UnifiedConfiguration
 	}
 	tests := []struct {
 		name          string
@@ -27,12 +28,12 @@ func Test_parseConfig(t *testing.T) {
 	}{
 		{
 			name:          "No configs",
-			args:          args{cfg: &schema.SiteConfiguration{}},
+			args:          args{cfg: &conf.UnifiedConfiguration{}},
 			wantProviders: map[schema.GitHubAuthProvider]auth.Provider{},
 		},
 		{
 			name: "1 GitHub.com config",
-			args: args{cfg: &schema.SiteConfiguration{
+			args: args{cfg: &conf.UnifiedConfiguration{Core: schema.CoreSiteConfiguration{
 				AuthProviders: []schema.AuthProviders{{
 					Github: &schema.GitHubAuthProvider{
 						ClientID:     "my-client-id",
@@ -42,7 +43,7 @@ func Test_parseConfig(t *testing.T) {
 						Url:          "https://github.com",
 					},
 				}},
-			}},
+			}}},
 			wantProviders: map[schema.GitHubAuthProvider]auth.Provider{
 				schema.GitHubAuthProvider{
 					ClientID:     "my-client-id",
@@ -66,7 +67,7 @@ func Test_parseConfig(t *testing.T) {
 		},
 		{
 			name: "2 GitHub configs",
-			args: args{cfg: &schema.SiteConfiguration{
+			args: args{cfg: &conf.UnifiedConfiguration{Core: schema.CoreSiteConfiguration{
 				AuthProviders: []schema.AuthProviders{{
 					Github: &schema.GitHubAuthProvider{
 						ClientID:     "my-client-id",
@@ -84,7 +85,7 @@ func Test_parseConfig(t *testing.T) {
 						Url:          "https://mycompany.com",
 					},
 				}},
-			}},
+			}}},
 			wantProviders: map[schema.GitHubAuthProvider]auth.Provider{
 				schema.GitHubAuthProvider{
 					ClientID:     "my-client-id",

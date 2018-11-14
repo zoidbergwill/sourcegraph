@@ -44,8 +44,8 @@ func TestGet(t *testing.T) {
 
 	t.Run("from DB", func(t *testing.T) {
 		defer reset()
-		db.Mocks.SiteConfig.Get = func(ctx context.Context) (*types.SiteConfig, error) {
-			return &types.SiteConfig{SiteID: "a"}, nil
+		db.Mocks.SiteIDInfo.Get = func(ctx context.Context) (*types.SiteIDInfo, error) {
+			return &types.SiteIDInfo{SiteID: "a"}, nil
 		}
 
 		if err := tryInit(); err != nil {
@@ -61,7 +61,7 @@ func TestGet(t *testing.T) {
 
 	t.Run("panics if DB unavailable", func(t *testing.T) {
 		defer reset()
-		db.Mocks.SiteConfig.Get = func(ctx context.Context) (*types.SiteConfig, error) {
+		db.Mocks.SiteIDInfo.Get = func(ctx context.Context) (*types.SiteIDInfo, error) {
 			return nil, errors.New("x")
 		}
 
@@ -97,8 +97,8 @@ func TestGet(t *testing.T) {
 		defer reset()
 		os.Setenv("TRACKING_APP_ID", "a")
 		defer os.Unsetenv("TRACKING_APP_ID")
-		db.Mocks.SiteConfig.Get = func(ctx context.Context) (*types.SiteConfig, error) {
-			return &types.SiteConfig{SiteID: "b"}, nil
+		db.Mocks.SiteIDInfo.Get = func(ctx context.Context) (*types.SiteIDInfo, error) {
+			return &types.SiteIDInfo{SiteID: "b"}, nil
 		}
 
 		if err := tryInit(); err != nil {
