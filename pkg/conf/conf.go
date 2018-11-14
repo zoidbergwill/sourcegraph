@@ -75,14 +75,7 @@ func init() {
 	if mode == modeTest {
 		close(configurationServerFrontendOnlyInitialized)
 
-		// TODO(slimsag): UnifiedConfiguration
-
 		// Seed the client store with a dummy configuration for test cases.
-		dummyConfig := `
-		{
-			// This is an empty configuration to run test cases.
-		}`
-
 		_, err := clientStore.MaybeUpdate(conftypes.RawUnifiedConfiguration{
 			Core:       "{}",
 			Site:       "{}",
@@ -91,7 +84,6 @@ func init() {
 		if err != nil {
 			log.Fatalf("received error when setting up the store for the default client during test, err :%s", err)
 		}
-
 		return
 	}
 
