@@ -146,10 +146,8 @@ func (r *siteConfigurationResolver) Source() string {
 }
 
 func (r *schemaResolver) UpdateSiteConfiguration(ctx context.Context, args *struct {
-	LastID *int
-	Input  string
+	Input string
 }) (bool, error) {
-	// TODO(slimsag): UnifiedConfiguration: use LastID
 	// 🚨 SECURITY: The site configuration contains secret tokens and credentials,
 	// so only admins may view it.
 	if err := backend.CheckCurrentUserIsSiteAdmin(ctx); err != nil {
