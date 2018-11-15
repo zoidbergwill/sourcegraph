@@ -1,14 +1,15 @@
-import { ActionItem } from '@sourcegraph/extensions-client-common/lib/app/actions/ActionItem'
 import * as H from 'history'
 import { isEqual } from 'lodash'
 import * as React from 'react'
 import { concat, Subject, Subscription } from 'rxjs'
 import { catchError, distinctUntilChanged, filter, map, startWith, switchMap, tap } from 'rxjs/operators'
 import { parseSearchURLQuery, SearchOptions } from '..'
+import { ContributableMenu } from '../../../../shared/src/api/protocol'
+import { ActionsContainer } from '../../../../shared/src/app/actions/ActionsContainer'
 import * as GQL from '../../../../shared/src/graphqlschema'
 import { PageTitle } from '../../components/PageTitle'
 import { ExtensionsControllerProps, ExtensionsProps } from '../../extensions/ExtensionsClientCommonContext'
-import { currentConfiguration, viewerSettings } from '../../settings/configuration'
+import { viewerSettings } from '../../settings/configuration'
 import { eventLogger } from '../../tracking/eventLogger'
 import { isErrorLike } from '../../util/errors'
 import { search } from '../backend'
@@ -17,8 +18,6 @@ import { isSearchResults, submitSearch, toggleSearchFilter } from '../helpers'
 import { queryTelemetryData } from '../queryTelemetry'
 import { SearchResultsList } from './SearchResultsList'
 import { SearchResultsListOld } from './SearchResultsListOld'
-import { ActionsContainer } from '../../../../shared/src/app/actions/ActionsContainer'
-import { ContributableMenu } from '../../../../shared/src/api/protocol'
 
 const UI_PAGE_SIZE = 75
 
@@ -184,25 +183,24 @@ export class SearchResults extends React.Component<SearchResultsProps, SearchRes
         return (
             <div className="search-results">
                 <PageTitle key="page-title" title={searchOptions && searchOptions.query} />
-                {(isSearchResults(this.state.resultsOrError) && (filters.length > 0) || extensionFilters) &&
-                (
-                <div className="search-results__filters-bar">
-                    Filters:
-                    <div className="search-results__filters">
-                        {extensionFilters}
-                        {filters
-                            .filter(filter => filter.value !== '')
-                            .map((filter, i) => (
-                                <FilterChip
-                                    query={this.props.navbarSearchQuery}
-                                    onFilterChosen={this.onDynamicFilterClicked}
-                                    key={filter.value}
-                                    value={filter.value}
-                                    name={filter.name}
-                                />
-                            ))}
+                {((isSearchResults(this.state.resultsOrError) && filters.length > 0) || extensionFilters) && (
+                    <div className="search-results__filters-bar">
+                        Filters:
+                        <div className="search-results__filters">
+                            {extensionFilters}
+                            {filters
+                                .filter(filter => filter.value !== '')
+                                .map((filter, i) => (
+                                    <FilterChip
+                                        query={this.props.navbarSearchQuery}
+                                        onFilterChosen={this.onDynamicFilterClicked}
+                                        key={filter.value}
+                                        value={filter.value}
+                                        name={filter.name}
+                                    />
+                                ))}
+                        </div>
                     </div>
-                </div>
                 )}
                 {newRepoFilters &&
                     isSearchResults(this.state.resultsOrError) &&
