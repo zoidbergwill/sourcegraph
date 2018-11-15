@@ -1,27 +1,35 @@
 import { LoadingSpinner } from '@sourcegraph/react-loading-spinner'
+import { upperFirst } from 'lodash'
 import AddIcon from 'mdi-react/AddIcon'
 import CityIcon from 'mdi-react/CityIcon'
+import EmoticonIcon from 'mdi-react/EmoticonIcon'
 import EyeIcon from 'mdi-react/EyeIcon'
+import HistoryIcon from 'mdi-react/HistoryIcon'
 import SettingsIcon from 'mdi-react/SettingsIcon'
 import UserIcon from 'mdi-react/UserIcon'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { Observable, Subscription } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { gql, queryGraphQL } from '../backend/graphql'
+import * as GQL from '../../../shared/src/graphqlschema'
+import { dataOrThrowErrors, gql, queryGraphQL } from '../backend/graphql'
 import { OverviewItem, OverviewList } from '../components/Overview'
 import { PageTitle } from '../components/PageTitle'
 import { eventLogger } from '../tracking/eventLogger'
-import { createAggregateError } from '../util/errors'
 import { RepositoryIcon } from '../util/icons' // TODO: Switch to mdi icon
 import { numberWithCommas, pluralize } from '../util/strings'
+import { fetchSiteUsageStatistics } from './backend'
+import { UsageChart } from './SiteAdminUsageStatisticsPage'
 
 interface Props {
     overviewComponents: ReadonlyArray<React.ComponentType>
+    isLightTheme: boolean
 }
 
 interface State {
     info?: OverviewInfo
+    stats?: GQL.ISiteUsageStatistics
+    error?: Error
 }
 
 /**
@@ -36,6 +44,9 @@ export class SiteAdminOverviewPage extends React.Component<Props, State> {
         eventLogger.logViewEvent('SiteAdminOverview')
 
         this.subscriptions.add(fetchOverview().subscribe(info => this.setState({ info })))
+        this.subscriptions.add(
+            fetchSiteUsageStatistics().subscribe(stats => this.setState({ stats }), error => this.setState({ error }))
+        )
     }
 
     public componentWillUnmount(): void {
@@ -127,7 +138,46 @@ export class SiteAdminOverviewPage extends React.Component<Props, State> {
                             )}
                         </OverviewItem>
                     )}
+                    {this.state.info && (
+                        <OverviewItem
+                            link="/site-admin/surveys"
+                            icon={EmoticonIcon}
+                            actions={
+                                <>
+                                    <Link to="/site-admin/surveys" className="btn btn-secondary btn-sm">
+                                        View all
+                                    </Link>
+                                </>
+                            }
+                        >
+                            {numberWithCommas(this.state.info.surveyResponses.totalCount)}&nbsp;{pluralize(
+                                'survey response',
+                                this.state.info.surveyResponses.totalCount
+                            )}
+                            {this.state.info.surveyResponses.totalCount >= 5 &&
+                                `${numberWithCommas(
+                                    this.state.info.surveyResponses.averageScore
+                                )} average score (0–10)`}
+                        </OverviewItem>
+                    )}
                 </OverviewList>
+                {this.state.error && <p className="alert alert-danger">{upperFirst(this.state.error.message)}</p>}
+                {this.state.stats && (
+                    <>
+                        <br />
+                        <UsageChart
+                            {...this.props}
+                            stats={this.state.stats}
+                            chartID="waus"
+                            className="mt-5 mb-5"
+                            header={
+                                <h2>
+                                    Weekly unique users (<Link to="/site-admin/usage-statistics">see more</Link>)
+                                </h2>
+                            }
+                        />
+                    </>
+                )}
             </div>
         )
     }
@@ -137,6 +187,10 @@ interface OverviewInfo {
     repositories: number | null
     users: number
     orgs: number
+    surveyResponses: {
+        totalCount: number
+        averageScore: number
+    }
 }
 
 function fetchOverview(): Observable<OverviewInfo> {
@@ -151,17 +205,18 @@ function fetchOverview(): Observable<OverviewInfo> {
             organizations {
                 totalCount
             }
+            surveyResponses {
+                totalCount
+                averageScore
+            }
         }
     `).pipe(
-        map(({ data, errors }) => {
-            if (!data || !data.repositories || !data.users || !data.organizations) {
-                throw createAggregateError(errors)
-            }
-            return {
-                repositories: data.repositories.totalCount,
-                users: data.users.totalCount,
-                orgs: data.organizations.totalCount,
-            }
-        })
+        map(dataOrThrowErrors),
+        map(data => ({
+            repositories: data.repositories.totalCount,
+            users: data.users.totalCount,
+            orgs: data.organizations.totalCount,
+            surveyResponses: data.surveyResponses,
+        }))
     )
 }
