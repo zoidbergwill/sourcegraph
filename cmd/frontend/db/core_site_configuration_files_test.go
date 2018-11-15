@@ -7,7 +7,7 @@ import (
 	dbtesting "github.com/sourcegraph/sourcegraph/cmd/frontend/db/testing"
 )
 
-func TestCoreSiteConfigurationFiles_CoreGetLatestEmpty(t *testing.T) {
+func TestCoreSiteConfigurationFiles_CoreGetLatestDefault(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -19,8 +19,8 @@ func TestCoreSiteConfigurationFiles_CoreGetLatestEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if latestFile != nil {
-		t.Errorf("expected nil latestFile since no site configuration was created, got: %+v", latestFile)
+	if latestFile == nil {
+		t.Errorf("expected non-nil latestFile since default site configuration should be created, got: %+v", latestFile)
 	}
 }
 
@@ -47,6 +47,7 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 	}
 
 	type output struct {
+		ID       int32
 		contents string
 	}
 
@@ -70,6 +71,7 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 						contents: `"This is a test."`,
 					},
 					output{
+						ID:       2,
 						contents: `"This is a test."`,
 					},
 				},
@@ -84,15 +86,17 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 						contents: `"This is the first one."`,
 					},
 					output{
+						ID:       2,
 						contents: `"This is the first one."`,
 					},
 				},
 				pair{
 					input{
-						lastID:   1,
+						lastID:   2,
 						contents: `"This is the second one."`,
 					},
 					output{
+						ID:       3,
 						contents: `"This is the second one."`,
 					},
 				},
@@ -107,6 +111,7 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 						contents: `"This is the first one."`,
 					},
 					output{
+						ID:       2,
 						contents: `"This is the first one."`,
 					},
 				},
@@ -116,6 +121,7 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 						contents: `"This configuration is now behind the first one, so it shouldn't be saved."`,
 					},
 					output{
+						ID:       2,
 						contents: `"This is the first one."`,
 					},
 				},
@@ -134,6 +140,7 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 						}`,
 					},
 					output{
+						ID: 2,
 						contents: `{"fieldA": "valueA",
 
 // This is a comment.
@@ -159,6 +166,9 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 				if output.Contents != p.expected.contents {
 					t.Fatalf("returned site configuration file contents after creation - expected: %q, got:%q", p.expected.contents, output.Contents)
 				}
+				if output.ID != p.expected.ID {
+					t.Fatalf("returned site configuration file ID after creation - expected: %v, got:%v", p.expected.ID, output.ID)
+				}
 
 				latestFile, err := CoreSiteConfigurationFiles.CoreGetLatest(ctx)
 				if err != nil {
@@ -171,6 +181,9 @@ func TestCoreSiteConfigurationFiles_CoreCreateIfUpToDate(t *testing.T) {
 
 				if latestFile.Contents != p.expected.contents {
 					t.Fatalf("returned site configuration file contents after GetLatest - expected: %q, got:%q", p.expected.contents, latestFile.Contents)
+				}
+				if latestFile.ID != p.expected.ID {
+					t.Fatalf("returned site configuration file ID after GetLatest - expected: %v, got:%v", p.expected.ID, latestFile.ID)
 				}
 			}
 		})
