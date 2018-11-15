@@ -90,9 +90,8 @@ func init() {
 	// The default client is started in InitConfigurationServerFrontendOnly in
 	// the case of server mode.
 	if mode == modeClient {
-		close(configurationServerFrontendOnlyInitialized)
-
 		go defaultClient.continuouslyUpdate()
+		close(configurationServerFrontendOnlyInitialized)
 	}
 }
 
@@ -113,10 +112,14 @@ func InitConfigurationServerFrontendOnly(source ConfigurationSource) *Server {
 	server := NewServer(source)
 	server.Start()
 
-	close(configurationServerFrontendOnlyInitialized)
+	// Install the passthrough configuration source for defaultClient. This is
+	// so that the frontend does not request configuration from itself via HTTP
+	// and instead only relies on the DB.
+	defaultClient.passthrough = source
 
 	go defaultClient.continuouslyUpdate()
 	configurationServerFrontendOnly = server
+	close(configurationServerFrontendOnlyInitialized)
 	return server
 }
 

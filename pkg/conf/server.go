@@ -125,7 +125,7 @@ func (s *Server) Start() {
 	})
 }
 
-// watchDisk reloads the configuration file from disk at least every five seconds or whenever
+// watchSource reloads the configuration from the source at least every five seconds or whenever
 // server.Write() is called.
 func (s *Server) watchDisk() {
 	for {
@@ -139,9 +139,9 @@ func (s *Server) watchDisk() {
 			// File possibly changed on FS, so check now.
 		}
 
-		err := s.updateFromDisk()
+		err := s.updateFromSource()
 		if err != nil {
-			log.Printf("failed to read configuration file: %s. Fix your Sourcegraph configuration (%s) to resolve this error. Visit https://docs.sourcegraph.com/ to learn more.", err, s.source.FilePath())
+			log.Printf("failed to read configuration: %s. Fix your Sourcegraph configuration (%s) to resolve this error. Visit https://docs.sourcegraph.com/ to learn more.", err, s.source.FilePath())
 		}
 
 		if signalDoneReading != nil {
@@ -150,7 +150,7 @@ func (s *Server) watchDisk() {
 	}
 }
 
-func (s *Server) updateFromDisk() error {
+func (s *Server) updateFromSource() error {
 	rawConfig, err := s.source.Read()
 	if err != nil {
 		return errors.Wrap(err, "unable to read configuration")

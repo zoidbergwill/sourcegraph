@@ -9,12 +9,14 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/sourcegraph/sourcegraph/pkg/api"
+	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
 )
 
 type client struct {
-	store      *Store
-	watchersMu sync.Mutex
-	watchers   []chan struct{}
+	store       *Store
+	passthrough ConfigurationSource
+	watchersMu  sync.Mutex
+	watchers    []chan struct{}
 }
 
 var defaultClient *client
@@ -158,7 +160,15 @@ func (c *client) continuouslyUpdate() {
 }
 
 func (c *client) fetchAndUpdate() error {
-	newConfig, err := api.InternalClient.Configuration(context.Background())
+	var (
+		newConfig conftypes.RawUnifiedConfiguration
+		err       error
+	)
+	if c.passthrough != nil {
+		newConfig, err = c.passthrough.Read()
+	} else {
+		newConfig, err = api.InternalClient.Configuration(context.Background())
+	}
 	if err != nil {
 		return errors.Wrap(err, "unable to fetch new configuration")
 	}

@@ -26,7 +26,11 @@ type configurationSource struct {
 
 func (c configurationSource) Read() (conftypes.RawUnifiedConfiguration, error) {
 	// TODO(slimsag): UnifiedConfiguration
-	return conftypes.RawUnifiedConfiguration{}, nil
+	return conftypes.RawUnifiedConfiguration{
+		Core:       `{}`,
+		Site:       `{}`,
+		Deployment: conftypes.DeploymentConfiguration{},
+	}, nil
 	/*
 		data, err := ioutil.ReadFile(c.FilePath())
 		if err != nil {
