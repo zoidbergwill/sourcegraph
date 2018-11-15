@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/sourcegraph/sourcegraph/pkg/conf/confdb"
 	"github.com/sourcegraph/sourcegraph/pkg/env"
 	"github.com/sourcegraph/sourcegraph/schema"
 )
@@ -16,6 +17,25 @@ func init() {
 	deployType := DeployType()
 	if !IsValidDeployType(deployType) {
 		log.Fatalf("The 'DEPLOY_TYPE' environment variable is invalid. Expected one of: %q, %q, %q. Got: %q", DeployCluster, DeployDocker, DeployDev, deployType)
+	}
+	switch {
+	case IsDev(deployType):
+		confdb.SetDefaultConfigurations(
+			defaultDevAndTestingConfiguration.Core,
+			defaultDevAndTestingConfiguration.Site,
+		)
+	case IsDeployTypeDockerContainer(deployType):
+		confdb.SetDefaultConfigurations(
+			defaultClusterConfiguration.Core,
+			defaultClusterConfiguration.Site,
+		)
+	case IsDeployTypeCluster(deployType):
+		confdb.SetDefaultConfigurations(
+			defaultClusterConfiguration.Core,
+			defaultClusterConfiguration.Site,
+		)
+	default:
+		panic("deploy type did not register default configuration")
 	}
 }
 
