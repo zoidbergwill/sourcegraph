@@ -12,6 +12,7 @@ import { debounceTime, distinctUntilChanged, filter, first, map, skip, skipUntil
 import { buildSearchURLQuery, parseSearchURLQuery } from '..'
 import * as GQL from '../../backend/graphqlschema'
 import { FileMatch } from '../../components/FileMatch'
+import { GenericMatch } from '../../components/GenericMatch'
 import { ModalContainer } from '../../components/ModalContainer'
 import { VirtualList } from '../../components/VirtualList'
 import { eventLogger } from '../../tracking/eventLogger'
@@ -22,7 +23,6 @@ import { SavedQueryCreateForm } from '../saved-queries/SavedQueryCreateForm'
 import { CommitSearchResult } from './CommitSearchResult'
 import { RepositorySearchResult } from './RepositorySearchResult'
 import { SearchResultsInfoBar } from './SearchResultsInfoBar'
-import { GenericMatch } from '../../components/GenericMatch'
 
 const isSearchResults = (val: any): val is GQL.ISearchResults => val && val.__typename === 'SearchResults'
 
@@ -286,7 +286,7 @@ export class SearchResultsList extends React.PureComponent<SearchResultsListProp
                                         itemsToShow={this.state.resultsShown}
                                         onShowMoreItems={this.onBottomHit(results.results.length)}
                                         onVisibilityChange={this.nextItemVisibilityChange}
-                                        items={results.results2
+                                        items={results.results
                                             .map((result, i) => this.renderResult(result, i <= 15))
                                             .filter(isDefined)}
                                         containment={this.scrollableElementRef || undefined}
@@ -401,7 +401,7 @@ export class SearchResultsList extends React.PureComponent<SearchResultsListProp
         )
     }
 
-    private renderResult(result: GQL.IGenericSearchResult, expanded: boolean): JSX.Element | undefined {
+    private renderResult(result: GQL.GenericSearchResult, expanded: boolean): JSX.Element | undefined {
         // switch (result.__typename) {
         //     case 'Repository':
         //         return <RepositorySearchResult key={'repo:' + result.id} result={result} onSelect={this.logEvent} />
@@ -429,17 +429,8 @@ export class SearchResultsList extends React.PureComponent<SearchResultsListProp
         //                 allExpanded={this.props.allExpanded}
         //             />
         //         )
-        //     case 'IssueResult':
-        //         return (
-        //             <div key={result.url} className="result-container">
-        //                 <a href={result.url}>
-        //                     <div className="result-container__header">{result.title}</div>
-        //                 </a>
-        //                 <p>{result.body}</p>
-        //             </div>
-        //         )
         // }
-        return <GenericMatch result={result} />
+        return <GenericMatch key={result.label} result={result} isLightTheme={this.props.isLightTheme} />
         // return undefined
     }
 

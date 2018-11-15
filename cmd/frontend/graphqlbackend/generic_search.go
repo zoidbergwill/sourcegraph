@@ -2,94 +2,80 @@ package graphqlbackend
 
 import (
 	"context"
-	"html/template"
-
-	"github.com/sourcegraph/sourcegraph/pkg/highlight"
-	"github.com/sourcegraph/sourcegraph/pkg/markdown"
+	"fmt"
+	"strings"
 )
 
-type genericSearchResultResolver struct {
-	icon    string
-	label   string
-	url     string
-	detail  *string
-	results []*genericSearchMatchResolver
+// A resolver for the GraphQL type GenericSearchMatch
+type GenericSearchMatchResolver struct {
+	url             string
+	body            string
+	path            *string
+	language        string
+	highlights      []*highlightedRange
+	highlightedBody *string
 }
 
-func (g *genericSearchResultResolver) Icon() string {
-	return g.icon
-}
-func (g *genericSearchResultResolver) Label() string {
-	label, err := markdown.Render(g.label, nil)
-	if err != nil {
-		return ""
-	}
-
-	return label
-}
-
-func (g *genericSearchResultResolver) URL() string {
-	return g.url
-}
-
-func (g *genericSearchResultResolver) Detail() *string {
-	return g.detail
-}
-
-type genericSearchMatchResolver struct {
-	url        string
-	body       string
-	language   string
-	highlights []*highlightedRange
-}
-
-func (g *genericSearchResultResolver) Results() []*genericSearchMatchResolver {
-	return g.results
-}
-
-func (m *genericSearchMatchResolver) URL() string {
+func (m *GenericSearchMatchResolver) URL() string {
 	return m.url
 }
 
-func (m *genericSearchMatchResolver) Body(ctx context.Context) string {
-	return m.Highlight(ctx)
+func (m *GenericSearchMatchResolver) Body(ctx context.Context) string {
+	return m.body
 }
 
-func (m *genericSearchMatchResolver) Highlights(ctx context.Context) []*highlightedRange {
+func (m *GenericSearchMatchResolver) Highlights(ctx context.Context) []*highlightedRange {
 	return m.highlights
 }
 
-func (m *genericSearchMatchResolver) MarkdownRenderedBody(ctx context.Context) string {
-	body, err := markdown.Render(m.body, nil)
-	if err != nil {
-		return ""
-	}
-	return body
+func (m *GenericSearchMatchResolver) HighlightedBody(ctx context.Context) (*string, error) {
+	return m.highlightedBody, nil
+	// if m.path == nil {
+	// 	return nil, nil
+	// }
+	// var (
+	// 	html   template.HTML
+	// 	result = &highlightedFileResolver{}
+	// )
+	// // Check if the body should be highlighted.
+	// var err error
+	// html, result.aborted, err = highlight.Code(ctx, m.body, *m.path, false, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if result.aborted {
+	// 	return &m.body, nil
+	// }
+	// result.html = string(html)
+
+	// return &result.html, nil
 }
 
-func (m *genericSearchMatchResolver) Language(ctx context.Context) string {
-	return m.language
-}
+func GetHighlightedWithContext(ctx context.Context, file *gitTreeEntryResolver, lineNumber int32) string {
+	q := struct {
+		DisableTimeout bool
+		IsLightTheme   bool
+	}{
+		true,
+		true,
+	}
 
-func (m *genericSearchMatchResolver) Highlight(ctx context.Context) string {
-	if len(m.language) == 0 {
-		return m.body
+	fmt.Println("COMMIT", file.path, file.commit)
+	if file.commit.oid != "" {
+		h, err := file.Highlight(ctx, &q)
+		if err != nil {
+			return ""
+		}
+		highlightedHTML := h.html
+		withoutInitialTable := highlightedHTML[len("<table>"):]
+		noTable := withoutInitialTable[:len(withoutInitialTable)-len("</table>")]
+		n := strings.Split(noTable, "</tr>")
+		linesWithContext := n[lineNumber-2 : lineNumber+1]
+		for index, row := range linesWithContext {
+			linesWithContext[index] = row + "</tr>"
+		}
+		return strings.Join(linesWithContext, "")
 	}
-	var (
-		html   template.HTML
-		result = &highlightedFileResolver{}
-	)
-	// Check if the body should be highlighted.
-	var err error
+	return ""
 
-	dummyFile := "file.txt"
-	if len(m.language) > 0 {
-		dummyFile = "file." + m.language
-	}
-	html, result.aborted, err = highlight.Code(ctx, m.body, dummyFile, true, true)
-	if err != nil {
-		return ""
-	}
-	result.html = string(html)
-	return result.html
 }

@@ -28,6 +28,11 @@ type commitSearchResultResolver struct {
 	sourceRefs     []*gitRefResolver
 	messagePreview *highlightedString
 	diffPreview    *highlightedString
+	icon           string
+	label          string
+	url            string
+	detail         *string
+	results        []*GenericSearchMatchResolver
 }
 
 func (r *commitSearchResultResolver) Commit() *gitCommitResolver         { return r.commit }
@@ -35,6 +40,24 @@ func (r *commitSearchResultResolver) Refs() []*gitRefResolver            { retur
 func (r *commitSearchResultResolver) SourceRefs() []*gitRefResolver      { return r.sourceRefs }
 func (r *commitSearchResultResolver) MessagePreview() *highlightedString { return r.messagePreview }
 func (r *commitSearchResultResolver) DiffPreview() *highlightedString    { return r.diffPreview }
+func (r *commitSearchResultResolver) Icon() string {
+	return r.icon
+}
+func (r *commitSearchResultResolver) Label() string {
+	return r.label
+}
+
+func (r *commitSearchResultResolver) URL() string {
+	return r.url
+}
+
+func (r *commitSearchResultResolver) Detail() *string {
+	return r.detail
+}
+
+func (r *commitSearchResultResolver) Results() []*GenericSearchMatchResolver {
+	return r.results
+}
 
 var mockSearchCommitDiffsInRepo func(ctx context.Context, repoRevs search.RepositoryRevisions, info *search.PatternInfo, query *query.Query) (results []*commitSearchResultResolver, limitHit, timedOut bool, err error)
 

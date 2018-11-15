@@ -1,12 +1,15 @@
 import FileIcon from 'mdi-react/FileIcon'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import VisibilitySensor from 'react-visibility-sensor'
+import { Subject } from 'rxjs'
 import * as GQL from '../backend/graphqlschema'
 import { highlightNode } from '../util/dom'
 import { ResultContainer } from './ResultContainer'
 
 interface Props {
-    result: GQL.IGenericSearchResult
+    result: GQL.GenericSearchResult
+    isLightTheme: boolean
 }
 
 interface HighlightRange {
@@ -29,7 +32,9 @@ export class GenericMatch extends React.Component<Props> {
         super(props)
     }
 
-    private renderTitle = () => <div dangerouslySetInnerHTML={{ __html: this.props.result.label }} />
+    private renderTitle = () => (
+        <div key={this.props.result.label} dangerouslySetInnerHTML={{ __html: this.props.result.label }} />
+    )
     private renderBody = () => (
         <>
             {this.props.result.results!.map(item => {
@@ -37,7 +42,17 @@ export class GenericMatch extends React.Component<Props> {
                 item.highlights.map(i =>
                     highlightRanges.push({ line: i.line, character: i.character, highlightLength: i.length })
                 )
-                return <GenCodeExcerpt body={item.body} url={item.url} highlightRanges={highlightRanges} />
+
+                return (
+                    <GenCodeExcerpt
+                        key={item.url}
+                        item={item}
+                        body={item.body}
+                        url={item.url}
+                        highlightRanges={highlightRanges}
+                        isLightTheme={this.props.isLightTheme}
+                    />
+                )
             })}
         </>
     )
@@ -56,13 +71,18 @@ export class GenericMatch extends React.Component<Props> {
 }
 
 interface CodeExcerptProps {
+    item: GQL.IGenericSearchMatch
     body: string
     url: string
     highlightRanges: HighlightRange[]
+    isLightTheme: boolean
 }
 
 class GenCodeExcerpt extends React.Component<CodeExcerptProps> {
-    constructor(props: CodeExcerptProps) {
+    private visibilitySensorOffset = { bottom: -500 }
+    private visibilityChanges = new Subject<boolean>()
+
+    public constructor(props: CodeExcerptProps) {
         super(props)
     }
 
@@ -71,28 +91,61 @@ class GenCodeExcerpt extends React.Component<CodeExcerptProps> {
     public componentDidUpdate(prevProps: CodeExcerptProps): void {
         if (this.tableContainerElement) {
             const visibleRows = this.tableContainerElement.querySelectorAll('table tr')
-            for (const highlight of this.props.highlightRanges) {
-                console.log(visibleRows)
-                const code = visibleRows[0].lastChild as HTMLTableDataCellElement
-                highlightNode(code, highlight.character, highlight.highlightLength)
+            if (visibleRows.length > 0) {
+                for (const highlight of this.props.highlightRanges) {
+                    // If we add context lines we must select the right line
+                    const code = visibleRows[0].lastChild as HTMLTableDataCellElement
+                    highlightNode(code, highlight.character, highlight.highlightLength)
+                }
             }
         }
     }
 
-    private getFirstLine(): number {
-        return Math.max(0, Math.min(...this.props.highlightRanges.map(r => r.line)) - 1)
+    private onChangeVisibility = (isVisible: boolean): void => {
+        this.visibilityChanges.next(isVisible)
     }
 
+    // private getFirstLine(): number {
+    //     return Math.max(0, Math.min(...this.props.highlightRanges.map(r => r.line)) - 1)
+    // }
+
     public render(): JSX.Element {
+        if (this.tableContainerElement) {
+            const visibleRows = this.tableContainerElement.querySelectorAll('table tr')
+            if (visibleRows.length > 0) {
+                for (const highlight of this.props.highlightRanges) {
+                    // If we add context lines we must select the right line
+                    const code = visibleRows[0].lastChild as HTMLTableDataCellElement
+                    highlightNode(code, highlight.character, highlight.highlightLength)
+                }
+            }
+        }
         return (
-            <Link to={this.props.url} className="file-match__item">
-                <code>
-                    <div ref={this.setTableContainerElement} dangerouslySetInnerHTML={{ __html: this.props.body }} />
-                </code>
-            </Link>
+            <VisibilitySensor
+                onChange={this.onChangeVisibility}
+                partialVisibility={true}
+                offset={this.visibilitySensorOffset}
+            >
+                <Link key={this.props.url} to={this.props.url} className="file-match__item">
+                    <code>
+                        <div
+                            ref={this.setTableContainerElement}
+                            dangerouslySetInnerHTML={{
+                                __html: this.props.item.highlightedBody
+                                    ? this.props.item.highlightedBody
+                                    : this.props.body,
+                            }}
+                        />
+                    </code>
+                </Link>
+            </VisibilitySensor>
         )
     }
     private setTableContainerElement = (ref: HTMLElement | null) => {
         this.tableContainerElement = ref
+    }
+
+    private makeTableHTML(): string {
+        return '<table><tr><td>' + this.props.body + '</td></tr></table>'
     }
 }

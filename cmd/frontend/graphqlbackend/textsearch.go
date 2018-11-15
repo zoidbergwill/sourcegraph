@@ -70,6 +70,11 @@ type fileMatchResolver struct {
 	// preserve the original revision specifier from the user instead of navigating them to the
 	// absolute commit ID when they select a result.
 	inputRev *string
+	icon     string
+	label    string
+	url      string
+	detail   *string
+	results  []*GenericSearchMatchResolver
 }
 
 func (fm *fileMatchResolver) Key() string {
@@ -107,6 +112,81 @@ func (fm *fileMatchResolver) LineMatches() []*lineMatch {
 func (fm *fileMatchResolver) LimitHit() bool {
 	return fm.JLimitHit
 }
+
+func (fm *fileMatchResolver) Icon() string {
+	return fm.icon
+}
+func (fm *fileMatchResolver) Label() string {
+	return fm.label
+}
+
+func (fm *fileMatchResolver) URL() string {
+	return fm.url
+}
+
+func (fm *fileMatchResolver) Detail() *string {
+	return fm.detail
+}
+
+func (fm *fileMatchResolver) Results() []*GenericSearchMatchResolver {
+	return fm.results
+}
+
+func (fm *fileMatchResolver) GetHighlightedWithContext(ctx context.Context, lineNumber int32) string {
+	file := fm.File()
+	q := struct {
+		DisableTimeout bool
+		IsLightTheme   bool
+	}{
+		true,
+		true,
+	}
+
+	fmt.Println("COMMIT", file.path, file.commit, file.commit.oid)
+	if file.commit.oid != "" {
+		h, err := file.Highlight(ctx, &q)
+		if err != nil {
+			return ""
+		}
+		highlightedHTML := h.html
+		withoutInitialTable := highlightedHTML[len("<table>"):]
+		noTable := withoutInitialTable[:len(withoutInitialTable)-len("</table>")]
+		n := strings.Split(noTable, "</tr>")
+		linesWithContext := n[lineNumber-2 : lineNumber+1]
+		for index, row := range linesWithContext {
+			linesWithContext[index] = row + "</tr>"
+		}
+		return strings.Join(linesWithContext, "")
+	}
+	return ""
+
+}
+
+// func highlightFile(ctx context.Context, r *gitTreeEntryResolver) (*highlightedFileResolver, error) {
+// 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+// 	defer cancel()
+// 	code, err := git.ReadFile(ctx, backend.CachedGitRepo(r.commit.repo.repo), api.CommitID(r.commit.oid), r.path)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	// Never pass binary files to the syntax highlighter.
+// 	if isBinary(code) {
+// 		return nil, errors.New("cannot render binary file")
+// 	}
+
+// 	// Highlight the code.
+// 	var (
+// 		html   template.HTML
+// 		result = &highlightedFileResolver{}
+// 	)
+// 	html, result.aborted, err = highlight.Code(ctx, string(code), r.path, true, true)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	result.html = string(html)
+// 	return result, nil
+// }
 
 // LineMatch is the struct used by vscode to receive search results for a line
 type lineMatch struct {
