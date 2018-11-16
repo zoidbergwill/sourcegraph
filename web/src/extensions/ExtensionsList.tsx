@@ -54,6 +54,8 @@ export const registryExtensionFragment = gql`
         remoteURL
         registryName
         isLocal
+        isWorkInProgress
+        viewerCanAdminister
     }
 `
 
@@ -66,7 +68,7 @@ const LOADING: 'loading' = 'loading'
 
 interface ExtensionsResult {
     /** The configured extensions. */
-    extensions: ConfiguredExtension[]
+    extensions: ConfiguredExtension<GQL.IRegistryExtension>[]
 
     /** An error message that should be displayed to the user (in addition to the configured extensions). */
     error: string | null
@@ -254,7 +256,11 @@ export class ExtensionsList extends React.PureComponent<Props, State> {
                         gql`
                             query RegistryExtensions($query: String, $prioritizeExtensionIDs: [String!]!) {
                                 extensionRegistry {
-                                    extensions(query: $query, prioritizeExtensionIDs: $prioritizeExtensionIDs) {
+                                    extensions(
+                                        query: $query
+                                        prioritizeExtensionIDs: $prioritizeExtensionIDs
+                                        includeWIP: true
+                                    ) {
                                         nodes {
                                             ...RegistryExtensionFields
                                         }

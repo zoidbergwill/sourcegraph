@@ -52,7 +52,9 @@ func (r *registryExtensionConnectionResolver) compute(ctx context.Context) ([]gr
 	r.once.Do(func() {
 		args2 := r.args
 		if args2.First != nil {
-			*args2.First++ // so we can detect if there is a next page
+			tmp := *args2.First
+			tmp++ // so we can detect if there is a next page
+			args2.First = &tmp
 		}
 
 		var query string
@@ -63,7 +65,7 @@ func (r *registryExtensionConnectionResolver) compute(ctx context.Context) ([]gr
 		// Query local registry extensions.
 		var local []graphqlbackend.RegistryExtension
 		if r.args.Local && ListLocalRegistryExtensions != nil {
-			local, r.err = ListLocalRegistryExtensions(ctx, r.args)
+			local, r.err = ListLocalRegistryExtensions(ctx, args2)
 			if r.err != nil {
 				return
 			}
@@ -86,12 +88,28 @@ func (r *registryExtensionConnectionResolver) compute(ctx context.Context) ([]gr
 			}
 			remote = append(remote, xs...)
 		}
+		// Filter out WIP extensions from the remote extensions list if WIP extensions are excluded.
+		if !r.args.IncludeWIP {
+			keep := remote[:0]
+			for _, x := range remote {
+				if !IsWorkInProgressExtension(x.Manifest) {
+					keep = append(keep, x)
+				}
+			}
+			remote = keep
+		}
 
 		r.registryExtensions = make([]graphqlbackend.RegistryExtension, len(local)+len(remote))
 		copy(r.registryExtensions, local)
 		for i, x := range remote {
 			r.registryExtensions[len(local)+i] = &registryExtensionRemoteResolver{v: x}
 		}
+
+		// Sort WIP extensions last. (The local extensions list is already sorted in that way, but
+		// the remote extensions list isn't, so therefore the combined list isn't.)
+		sort.SliceStable(r.registryExtensions, func(i, j int) bool {
+			return !r.registryExtensions[i].IsWorkInProgress() && r.registryExtensions[j].IsWorkInProgress()
+		})
 
 		if r.args.PrioritizeExtensionIDs != nil && len(*r.args.PrioritizeExtensionIDs) > 0 {
 			// Sort prioritized extension IDs first.

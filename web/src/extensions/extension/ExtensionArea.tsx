@@ -43,10 +43,12 @@ export const registryExtensionFragment = gql`
         }
         createdAt
         updatedAt
+        publishedAt
         url
         remoteURL
         registryName
         isLocal
+        isWorkInProgress
         viewerCanAdminister
     }
 `

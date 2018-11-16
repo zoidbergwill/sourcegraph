@@ -37,7 +37,6 @@ func main() {
 	pipeline := &bk.Pipeline{}
 
 	bk.OnEveryStepOpts = append(bk.OnEveryStepOpts,
-		bk.Env("CYPRESS_INSTALL_BINARY", "0"),
 		bk.Env("GO111MODULE", "on"))
 
 	pipeline.AddStep(":white_check_mark:",
@@ -78,8 +77,10 @@ func main() {
 		bk.Cmd("curl -sL -o hadolint \"https://github.com/hadolint/hadolint/releases/download/v1.6.5/hadolint-$(uname -s)-$(uname -m)\" && chmod 700 hadolint"),
 		bk.Cmd("git ls-files | grep Dockerfile | xargs ./hadolint"))
 
-	pipeline.AddStep(":postgres:",
-		bk.Cmd("./dev/ci/ci-db-backcompat.sh"))
+	// TODO(sqs): reenable the DB backcompat test
+	//
+	// pipeline.AddStep(":postgres:",
+	// 	bk.Cmd("./dev/ci/ci-db-backcompat.sh"))
 
 	pipeline.AddStep(":go:",
 		bk.Cmd("go test -coverprofile=coverage.txt -covermode=atomic -race ./..."),
@@ -111,7 +112,6 @@ func main() {
 		bk.Cmd("pushd client/browser"),
 		bk.Cmd("yarn -s run browserslist"),
 		bk.Cmd("yarn -s run build"),
-		bk.Cmd("yarn -s run test:ci"),
 		bk.Cmd("popd"))
 
 	pipeline.AddWait()
@@ -123,6 +123,25 @@ func main() {
 		bk.Cmd("bash <(curl -s https://codecov.io/bash) -f coverage-final.json"),
 		bk.Cmd("buildkite-agent artifact download 'coverage.txt' coverage.txt || true"),
 		bk.Cmd("bash <(curl -s https://codecov.io/bash) -f coverage.txt"))
+
+	pipeline.AddWait()
+
+	if os.Getenv("BUILDKITE_BRANCH") == "bext/release" {
+		pipeline.AddStep(":chrome:",
+			bk.Env("FORCE_COLOR", "1"),
+			bk.Env("DISPLAY", ":99"),
+			bk.Cmd("Xvfb :99 &"),
+			bk.Cmd("yarn --frozen-lockfile --network-timeout 60000"),
+			bk.Cmd("pushd client/browser"),
+			bk.Cmd("yarn -s run build"),
+			bk.Cmd("yarn -s run test:ci"),
+			bk.Cmd("yarn -s run test:e2e"),
+			bk.Cmd("USE_EXTENSIONS=true yarn -s run build"),
+			bk.Cmd("yarn -s run test:ci"),
+			bk.Cmd("yarn -s run test:e2e"),
+			bk.Cmd("yarn -s run release"),
+			bk.Cmd("popd"))
+	}
 
 	pipeline.AddWait()
 

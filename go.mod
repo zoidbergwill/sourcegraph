@@ -16,6 +16,7 @@ require (
 	github.com/daviddengcn/go-colortext v0.0.0-20171126034257-17e75f6184bc
 	github.com/dghubble/gologin v1.0.2-0.20181013174641-0e442dd5bb73
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/die-net/lrucache v0.0.0-20180825112409-f89ea99a4e43
 	github.com/emersion/go-imap v1.0.0-beta.1
 	github.com/emersion/go-sasl v0.0.0-20161116183048-7e096a0a6197 // indirect
 	github.com/ericchiang/k8s v1.2.0
@@ -99,7 +100,7 @@ require (
 	github.com/sourcegraph/ctxvfs v0.0.0-20180418081416-2b65f1b1ea81
 	github.com/sourcegraph/docsite v0.0.0-20181017065628-43f33608b38d
 	github.com/sourcegraph/go-jsonschema v0.0.0-20180805125535-0e659b54484d
-	github.com/sourcegraph/go-langserver v2.0.1-0.20181010102349-2d9d8f4a24da+incompatible
+	github.com/sourcegraph/go-langserver v2.0.1-0.20181108233942-4a51fa2e1238+incompatible
 	github.com/sourcegraph/go-lsp v0.0.0-20181009131510-4631ffd93a18
 	github.com/sourcegraph/go-vcsurl v0.0.0-20131114132947-6b12603ea6fd
 	github.com/sourcegraph/godockerize v0.0.0-20181102001209-f9c9d82c8d1c
@@ -143,7 +144,7 @@ require (
 )
 
 replace (
-	github.com/google/zoekt => github.com/sourcegraph/zoekt v0.0.0-20181101150719-c7fac35362e5
+	github.com/google/zoekt => github.com/sourcegraph/zoekt v0.0.0-20181115082148-dacbbfd8c3ce
 	github.com/graph-gophers/graphql-go => github.com/sourcegraph/graphql-go v0.0.0-20180929065141-c790ffc3c46a
 	github.com/mattn/goreman => github.com/sourcegraph/goreman v0.1.2-0.20180928223752-6e9a2beb830d
 	github.com/russellhaering/gosaml2 => github.com/sourcegraph/gosaml2 v0.0.0-20180820053343-1b78a6b41538

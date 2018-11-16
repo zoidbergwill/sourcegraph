@@ -101,7 +101,8 @@ func (h *BuildHandler) fetchTransitiveDepsOfFile(ctx context.Context, fileURI ls
 	}()
 
 	bctx := h.lang.BuildContext(ctx)
-	bpkg, err := langserver.ContainingPackage(bctx, h.FilePath(fileURI))
+	filename := h.FilePath(fileURI)
+	bpkg, err := langserver.ContainingPackage(bctx, filename, h.RootFSPath)
 	if err != nil && !isMultiplePackageError(err) {
 		return err
 	}
@@ -124,7 +125,7 @@ type findPkgValue struct {
 	err   error
 }
 
-func (h *BuildHandler) findPackageCached(ctx context.Context, bctx *build.Context, p, srcDir string, mode build.ImportMode) (*build.Package, error) {
+func (h *BuildHandler) findPackageCached(ctx context.Context, bctx *build.Context, p, srcDir, rootPath string, mode build.ImportMode) (*build.Package, error) {
 	// bctx.FindPackage and loader.Conf does not have caching, and due to
 	// vendor we need to repeat work. So what we do is normalise the
 	// srcDir w.r.t. potential vendoring. This makes the assumption that
@@ -478,7 +479,15 @@ func FetchCommonDeps() {
 }
 
 // NewDepRepoVFS returns a virtual file system interface for accessing
-// the files in the specified (public) repo at the given commit.
+// the files in the specified repo at the given commit. The returned VFS
+// is always backed by a zip archive in memory. The following sources are
+// tried in sequence, and the first one that has the repo is used:
+//
+// 1. Directly from gitserver (will be removed in favor of the raw API soon)
+// 2. GitHub's codeload endpoint
+// 3. A full `git clone` followed by `git archive --format=zip <rev>`
+//
+// Sources 1 and 2 are performance optimizations over cloning the whole repo.
 var NewDepRepoVFS = func(ctx context.Context, cloneURL *url.URL, rev string) (ctxvfs.FileSystem, error) {
 	// First check if we can clone from gitserver. gitserver automatically
 	// clones missing repositories, so to prevent cloning unmanaged

@@ -9,6 +9,7 @@ import { isExtensionAdded } from '../ExtensionsClientCommonContext'
 import { ExtensionToggle } from '../ExtensionToggle'
 import { ExtensionAreaRouteContext } from './ExtensionArea'
 import { ExtensionConfigurationState } from './ExtensionConfigurationState'
+import { WorkInProgressBadge } from './WorkInProgressBadge'
 
 interface ExtensionAreaHeaderProps extends ExtensionAreaRouteContext, RouteComponentProps<{}> {
     navItems: ReadonlyArray<ExtensionAreaHeaderNavItem>
@@ -21,7 +22,9 @@ export interface ExtensionAreaHeaderNavItem extends NavItemWithIconDescriptor<Ex
 /**
  * Header for the extension area.
  */
-export const ExtensionAreaHeader: React.SFC<ExtensionAreaHeaderProps> = (props: ExtensionAreaHeaderProps) => {
+export const ExtensionAreaHeader: React.FunctionComponent<ExtensionAreaHeaderProps> = (
+    props: ExtensionAreaHeaderProps
+) => {
     const manifest: ExtensionManifest | undefined =
         props.extension.manifest && !isErrorLike(props.extension.manifest) ? props.extension.manifest : undefined
     let iconURL: URL | undefined
@@ -32,6 +35,8 @@ export const ExtensionAreaHeader: React.SFC<ExtensionAreaHeaderProps> = (props: 
     } catch (e) {
         // noop
     }
+
+    const isWorkInProgress = props.extension.registryExtension && props.extension.registryExtension.isWorkInProgress
 
     return (
         <div className="extension-area-header border-bottom simple-area-header">
@@ -60,7 +65,19 @@ export const ExtensionAreaHeader: React.SFC<ExtensionAreaHeaderProps> = (props: 
                                     {manifest &&
                                         manifest.title && <div className="text-muted">{props.extension.id}</div>}
                                     {manifest &&
-                                        manifest.description && <p className="mt-1 mb-0">{manifest.description}</p>}
+                                        (manifest.description || isWorkInProgress) && (
+                                            <p className="mt-1 mb-0">
+                                                {isWorkInProgress && (
+                                                    <WorkInProgressBadge
+                                                        viewerCanAdminister={
+                                                            !!props.extension.registryExtension &&
+                                                            props.extension.registryExtension.viewerCanAdminister
+                                                        }
+                                                    />
+                                                )}
+                                                {manifest.description}
+                                            </p>
+                                        )}
                                 </div>
                             </div>
                         </div>

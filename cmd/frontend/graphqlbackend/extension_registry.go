@@ -45,6 +45,7 @@ type RegistryExtensionConnectionArgs struct {
 	Publisher              *graphql.ID
 	Local                  bool
 	Remote                 bool
+	IncludeWIP             bool
 	PrioritizeExtensionIDs *[]string
 }
 
@@ -98,10 +99,12 @@ type RegistryExtension interface {
 	Manifest(ctx context.Context) (ExtensionManifest, error)
 	CreatedAt() *string
 	UpdatedAt() *string
+	PublishedAt(context.Context) (*string, error)
 	URL() string
 	RemoteURL() *string
 	RegistryName() (string, error)
 	IsLocal() bool
+	IsWorkInProgress() bool
 	ViewerCanAdminister(ctx context.Context) (bool, error)
 }
 

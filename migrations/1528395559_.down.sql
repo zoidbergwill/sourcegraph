@@ -1,2 +1,1 @@
-DROP TABLE "site_configuration_files";
-DROP TABLE "core_configuration_files";
+ALTER TABLE registry_extension_releases ALTER COLUMN manifest TYPE text USING manifest#>>'{}';

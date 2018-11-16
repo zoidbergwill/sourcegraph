@@ -1,17 +1,17 @@
-CREATE TABLE site_configuration_files (
-	"id" SERIAL NOT NULL PRIMARY KEY,
-    "contents" text,
-    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+CREATE FUNCTION is_valid_json(v text) RETURNS boolean AS $$
+BEGIN
+  RETURN (v::json is not null);
+    EXCEPTION
+     WHEN others THEN RETURN false;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
-CREATE UNIQUE INDEX "site_configuration_files_unique" ON site_configuration_files(id);
+-- It has always been impossible for manifests to contain invalid JSON, except in very early
+-- versions of the extension registry (that were never shipped in a release). The Sourcegraph.com
+-- database has 1 invalid manifest from this period that can be deleted. Because no other data could
+-- be affected, this DELETE statement is safe.
+DELETE FROM registry_extension_releases WHERE NOT is_valid_json(manifest);
 
-CREATE TABLE core_configuration_files (
-	"id" SERIAL NOT NULL PRIMARY KEY,
-    "contents" text,
-    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
+ALTER TABLE registry_extension_releases ALTER COLUMN manifest TYPE jsonb USING manifest::jsonb;
 
-CREATE UNIQUE INDEX "core_configuration_files_unique" ON core_configuration_files(id);
+DROP FUNCTION is_valid_json(text);

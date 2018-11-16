@@ -15,6 +15,7 @@ We welcome suggestions! Share feedback by using [code discussions](https://about
 - [Handle renames and deletions of mirrored repositories](https://github.com/sourcegraph/sourcegraph/issues/914)
 - [In-product site configuration](https://github.com/sourcegraph/sourcegraph/issues/965)
 - [Align internal deployment processes with customers'](https://github.com/sourcegraph/sourcegraph/issues/976)
+- [Sub-query searches](https://github.com/sourcegraph/sourcegraph/issues/1005)
 - [Search GitHub issues](https://github.com/sourcegraph/sourcegraph/issues/962)
 - [Simpler browser extension options menu](https://github.com/sourcegraph/sourcegraph/issues/961)
 - [LDAP and Active Directory user authentication](https://github.com/sourcegraph/sourcegraph/issues/963)
@@ -33,7 +34,7 @@ We welcome suggestions! Share feedback by using [code discussions](https://about
 
 - [Using Sourcegraph extensions in the editor](https://github.com/sourcegraph/sourcegraph/issues/978)
 - [Swift language support](https://github.com/sourcegraph/sourcegraph/issues/979)
-- [Direct UI integration and deployment bundling with GitLab](https://github.com/sourcegraph/about/pull/41)
+- [Direct UI integration and deployment bundling with GitLab](https://github.com/sourcegraph/sourcegraph/issues/1000)
 - [Extension registry discovery and statistics](https://github.com/sourcegraph/sourcegraph/issues/980)
 - [Cross-language API/IDL support](https://github.com/sourcegraph/sourcegraph/issues/981)
 - [Flow (JavaScript) language support](https://github.com/sourcegraph/sourcegraph/issues/982)
