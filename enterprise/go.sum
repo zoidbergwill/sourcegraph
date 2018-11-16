@@ -300,9 +300,11 @@ github.com/sourcegraph/godockerize v0.0.0-20180919081208-f4fb18a2ab18 h1:Owk1nJ1
 github.com/sourcegraph/godockerize v0.0.0-20180919081208-f4fb18a2ab18/go.mod h1:EnJwbnfidbH57UXewOZLIrwQVpu/spwbS/BMN0sPfCA=
 github.com/sourcegraph/godockerize v0.0.0-20181001062649-0f33644f1829 h1:wSrxJbC8KwkaqdjOCy9BUvq2YF2qSy38ljzrS+cBIRA=
 github.com/sourcegraph/godockerize v0.0.0-20181001062649-0f33644f1829/go.mod h1:EnJwbnfidbH57UXewOZLIrwQVpu/spwbS/BMN0sPfCA=
+github.com/sourcegraph/gosaml2 v0.0.0-20180820053343-1b78a6b41538 h1:K+cXn79iIvSN1c6Sq2hxk7n8T3ax0lII+FkvuOwgmPc=
 github.com/sourcegraph/gosaml2 v0.0.0-20180820053343-1b78a6b41538/go.mod h1:ZqB/uu1WtCDmlwK8c+TO8+QSfDkJsWx9LYjQBgGxxtk=
 github.com/sourcegraph/gosyntect v0.0.0-20180604231642-c01be3625b10 h1:9XH6ZJgu6KrVimEwZVXfTOvkGU1CHAvdc7mbZrMwA/U=
 github.com/sourcegraph/gosyntect v0.0.0-20180604231642-c01be3625b10/go.mod h1:G6fSBYyOm5huBpPQ4qhXejeVbKeehdP7WEmwb5Si7gM=
+github.com/sourcegraph/graphql-go v0.0.0-20180929065141-c790ffc3c46a h1:quXhD1UpAyXOxkpI6uE3sLQn8+cYTPzak6us/89EkX8=
 github.com/sourcegraph/graphql-go v0.0.0-20180929065141-c790ffc3c46a/go.mod h1:VlASmqwzCjVGsAX6ZaaoPS4tulDNfI+ZuEvYeeZX4oM=
 github.com/sourcegraph/httpcache v0.0.0-20160524185540-16db777d8ebe h1:JAHsmn5ixsIuTGS635/VeuVdS6RU5b4D/V1Dz/J+5R8=
 github.com/sourcegraph/httpcache v0.0.0-20160524185540-16db777d8ebe/go.mod h1:0AJ8DDXVNSPaIhEfFiCg9TqPt9YgLf+umcJSUjuG9SA=
@@ -311,6 +313,7 @@ github.com/sourcegraph/jsonrpc2 v0.0.0-20180831160525-549eb959f029/go.mod h1:eES
 github.com/sourcegraph/jsonx v0.0.0-20180801091521-5a4ae5eb18cd h1:NPk22RvonOjkNI4JgKJbOnGJrRT2C6Bg35LVtbrIULM=
 github.com/sourcegraph/jsonx v0.0.0-20180801091521-5a4ae5eb18cd/go.mod h1:7jkSQ2sdxwXMaIDxKJotTt+hwKnT9b/wbJFU7/ObUEY=
 github.com/sourcegraph/sourcegraph v0.0.0-20181015141638-6a69e6bebaf9/go.mod h1:KQASlsfv+3I6CgN9yhFf4UyGDP68NrQL2N2GRoGwBTk=
+github.com/sourcegraph/zoekt v0.0.0-20181101150719-c7fac35362e5 h1:ObcKFaWUiE72u60ZmKZNR55MuDRfxRXvkULYdAkyO+s=
 github.com/sourcegraph/zoekt v0.0.0-20181101150719-c7fac35362e5/go.mod h1:f1Qnbu4glSRTb9A/H7qLv4AhudFf3eStkDbpyb21KYQ=
 github.com/sqs/httpgzip v0.0.0-20180622165210-91da61ed4dff h1:35Om/vTf7BiYaXjy+V6enYxBRzWOhoFI0g/Uzc0QL8Y=
 github.com/sqs/httpgzip v0.0.0-20180622165210-91da61ed4dff/go.mod h1:nWz2tl1iTFolecQ3BuPG6Vgj45dmiYL0greltKiFMoU=
