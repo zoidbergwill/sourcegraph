@@ -43,29 +43,29 @@ func main() {
 		bk.Cmd("./dev/check/all.sh"))
 
 	pipeline.AddStep(":lipstick:",
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run prettier"))
 
 	pipeline.AddStep(":typescript:",
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run tslint"))
 
 	pipeline.AddStep(":stylelint:",
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run stylelint --quiet"))
 
 	pipeline.AddStep(":graphql:",
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run graphql-lint"))
 
 	pipeline.AddStep(":webpack:",
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run browserslist"),
 		bk.Cmd("NODE_ENV=production yarn run build --color"),
 		bk.Cmd("GITHUB_TOKEN= yarn run bundlesize"))
@@ -73,7 +73,7 @@ func main() {
 	pipeline.AddStep(":mocha:",
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run cover"),
 		bk.Cmd("node_modules/.bin/nyc report -r json"),
 		bk.ArtifactPaths("coverage/coverage-final.json"))

@@ -53,28 +53,28 @@ func main() {
 
 	pipeline.AddStep(":lipstick:",
 		bk.Cmd("popd"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run prettier"))
 
 	pipeline.AddStep(":typescript:",
 		bk.Cmd("popd"),
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run tslint"))
 
 	pipeline.AddStep(":stylelint:",
 		bk.Cmd("popd"),
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run stylelint --quiet"))
 
 	pipeline.AddStep(":webpack:",
 		bk.Cmd("popd"),
 		bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 		bk.Env("FORCE_COLOR", "1"),
-		bk.Cmd("yarn --frozen-lockfile"),
+		bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 		bk.Cmd("yarn run browserslist"),
 		bk.Cmd("NODE_ENV=production yarn run build --color"),
 		bk.Cmd("GITHUB_TOKEN= yarn run bundlesize"))
@@ -83,7 +83,7 @@ func main() {
 	// pipeline.AddStep(":mocha:",
 	// 	bk.Env("PUPPETEER_SKIP_CHROMIUM_DOWNLOAD", "true"),
 	// 	bk.Env("FORCE_COLOR", "1"),
-	// 	bk.Cmd("yarn --frozen-lockfile"),
+	// 	bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 	// 	bk.Cmd("yarn run cover"),
 	// 	bk.Cmd("node_modules/.bin/nyc report -r json"),
 	// 	bk.ArtifactPaths("coverage/coverage-final.json"))
@@ -200,7 +200,7 @@ func main() {
 			bk.Concurrency(1),
 			bk.Env("SOURCEGRAPH_BASE_URL", "https://sourcegraph.sgdev.org"),
 			bk.Env("FORCE_COLOR", "1"),
-			bk.Cmd("yarn --frozen-lockfile"),
+			bk.Cmd("yarn --ignore-engines --frozen-lockfile"),
 			bk.Cmd("yarn run test-e2e-sgdev --retries 5"),
 			bk.ArtifactPaths("./puppeteer/*.png"))
 		pipeline.AddWait()
