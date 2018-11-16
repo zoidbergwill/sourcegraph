@@ -4,7 +4,7 @@ set -ex
 cd $(dirname "${BASH_SOURCE[0]}")/../..
 
 pushd ..
-yarn --frozen-lockfile
+yarn --ignore-engines --frozen-lockfile
 yarn run build --color
 popd
 
