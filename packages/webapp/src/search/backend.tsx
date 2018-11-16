@@ -44,26 +44,23 @@ export function search(
                                     limitHit
                                     kind
                                 }
-                                results2 {
-                                    label
-                                    url
-                                    icon
-                                    results {
-                                        url
-                                        body
-                                        highlights {
-                                            line
-                                            character
-                                            length
-                                        }
-                                    }
-                                }
                                 results {
                                     ... on Repository {
                                         __typename
                                         id
                                         name
                                         url
+                                        label
+                                        icon
+                                        results {
+                                            url
+                                            body
+                                            highlights {
+                                                line
+                                                character
+                                                length
+                                            }
+                                        }
                                     }
                                     ... on FileMatch {
                                         __typename
@@ -85,10 +82,22 @@ export function search(
                                             url
                                             kind
                                         }
+                                        label
+                                        url
+                                        icon
                                         lineMatches {
                                             preview
                                             lineNumber
                                             offsetAndLengths
+                                        }
+                                        results {
+                                            url
+                                            body
+                                            highlights {
+                                                line
+                                                character
+                                                length
+                                            }
                                         }
                                     }
                                     ... on CommitSearchResult {
@@ -107,22 +116,6 @@ export function search(
                                             prefix
                                             repository {
                                                 name
-                                            }
-                                        }
-                                        messagePreview {
-                                            value
-                                            highlights {
-                                                line
-                                                character
-                                                length
-                                            }
-                                        }
-                                        diffPreview {
-                                            value
-                                            highlights {
-                                                line
-                                                character
-                                                length
                                             }
                                         }
                                         commit {
@@ -144,6 +137,18 @@ export function search(
                                             url
                                             tree(path: "") {
                                                 canonicalURL
+                                            }
+                                        }
+                                        label
+                                        url
+                                        icon
+                                        results {
+                                            url
+                                            body
+                                            highlights {
+                                                line
+                                                character
+                                                length
                                             }
                                         }
                                     }
