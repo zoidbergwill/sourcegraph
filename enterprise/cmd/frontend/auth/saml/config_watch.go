@@ -30,7 +30,8 @@ func init() {
 		cur []*schema.SAMLAuthProvider
 		reg = map[schema.SAMLAuthProvider]auth.Provider{}
 	)
-	conf.Watch(func() {
+	// TODO(slimsag): make async
+	go conf.Watch(func() {
 		mu.Lock()
 		defer mu.Unlock()
 

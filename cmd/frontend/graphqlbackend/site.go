@@ -141,8 +141,7 @@ func (r *siteConfigurationResolver) CanUpdate() bool {
 }
 
 func (r *siteConfigurationResolver) Source() string {
-	s := globals.ConfigurationServerFrontendOnly.FilePath()
-	return s
+	return "database" // TODO(slimsag): Remove this field now that it is useless!
 }
 
 func (r *schemaResolver) UpdateSiteConfiguration(ctx context.Context, args *struct {

@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"context"
 	"log"
 	"math/rand"
 	"sync"
@@ -14,9 +15,8 @@ import (
 // "raw" configuration.
 type ConfigurationSource interface {
 	// Write updates the configuration. The Deployment field is ignored.
-	Write(data conftypes.RawUnifiedConfiguration) error
-	Read() (conftypes.RawUnifiedConfiguration, error)
-	FilePath() string
+	Write(ctx context.Context, data conftypes.RawUnifiedConfiguration) error
+	Read(ctx context.Context) (conftypes.RawUnifiedConfiguration, error)
 }
 
 // Server provides access and manages modifications to the site configuration.
@@ -57,6 +57,7 @@ func (s *Server) Raw() conftypes.RawUnifiedConfiguration {
 // Write writes the JSON config file to the config file's path. If the JSON configuration is
 // invalid, an error is returned.
 func (s *Server) Write(input conftypes.RawUnifiedConfiguration) error {
+	ctx := context.Background() // TODO(slimsag)
 	// Parse the configuration so that we can diff it (this also validates it
 	// is proper JSON).
 	_, err := ParseConfig(input)
@@ -64,7 +65,7 @@ func (s *Server) Write(input conftypes.RawUnifiedConfiguration) error {
 		return err
 	}
 
-	err = s.source.Write(input)
+	err = s.source.Write(ctx, input)
 	if err != nil {
 		return err
 	}
@@ -121,13 +122,14 @@ func (s *Server) Edit(computeEdits func(current *schema.SiteConfiguration, raw s
 // Start initalizes the server instance.
 func (s *Server) Start() {
 	s.once.Do(func() {
-		go s.watchDisk()
+		go s.watchSource()
 	})
 }
 
 // watchSource reloads the configuration from the source at least every five seconds or whenever
 // server.Write() is called.
-func (s *Server) watchDisk() {
+func (s *Server) watchSource() {
+	ctx := context.Background()
 	for {
 		jitter := time.Duration(rand.Int63n(5 * int64(time.Second)))
 
@@ -139,9 +141,9 @@ func (s *Server) watchDisk() {
 			// File possibly changed on FS, so check now.
 		}
 
-		err := s.updateFromSource()
+		err := s.updateFromSource(ctx)
 		if err != nil {
-			log.Printf("failed to read configuration: %s. Fix your Sourcegraph configuration (%s) to resolve this error. Visit https://docs.sourcegraph.com/ to learn more.", err, s.source.FilePath())
+			log.Printf("failed to read configuration: %s. Fix your Sourcegraph configuration to resolve this error. Visit https://docs.sourcegraph.com/ to learn more.", err)
 		}
 
 		if signalDoneReading != nil {
@@ -150,8 +152,8 @@ func (s *Server) watchDisk() {
 	}
 }
 
-func (s *Server) updateFromSource() error {
-	rawConfig, err := s.source.Read()
+func (s *Server) updateFromSource(ctx context.Context) error {
+	rawConfig, err := s.source.Read(ctx)
 	if err != nil {
 		return errors.Wrap(err, "unable to read configuration")
 	}
@@ -193,10 +195,4 @@ func (s *Server) markNeedServerRestart() {
 	s.needRestartMu.Lock()
 	s.needRestart = true
 	s.needRestartMu.Unlock()
-}
-
-// FilePath is the path to the configuration file, if any.
-// TODO@ggilmore: re-evaluate whether or not we need this
-func (s *Server) FilePath() string {
-	return s.source.FilePath()
 }

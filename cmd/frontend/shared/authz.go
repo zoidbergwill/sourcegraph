@@ -11,7 +11,8 @@ func init() {
 		_, _, seriousProblems, warnings := providersFromConfig(&cfg)
 		return append(seriousProblems, warnings...)
 	})
-	conf.Watch(func() {
+	// TODO(slimsag): make async
+	go conf.Watch(func() {
 		allowAccessByDefault, authzProviders, _, _ := providersFromConfig(conf.Get())
 		authz.SetProviders(allowAccessByDefault, authzProviders)
 	})

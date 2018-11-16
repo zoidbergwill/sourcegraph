@@ -31,7 +31,8 @@ func init() {
 		cur []*schema.OpenIDConnectAuthProvider
 		reg = map[schema.OpenIDConnectAuthProvider]auth.Provider{}
 	)
-	conf.Watch(func() {
+	// TODO(slimsag): make async
+	go conf.Watch(func() {
 		mu.Lock()
 		defer mu.Unlock()
 

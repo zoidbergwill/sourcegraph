@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -75,7 +76,7 @@ type UpdateResult struct {
 // won't be updating and a parsing error will be returned
 // from the previous time that this function was called.
 //
-// configChange is defined iff the cache was actually udpated.
+// configChange is defined iff the cache was actually updated.
 // TODO@ggilmore: write a less-vague description
 func (s *Store) MaybeUpdate(rawConfig conftypes.RawUnifiedConfiguration) (UpdateResult, error) {
 	s.rawMu.Lock()
@@ -90,6 +91,12 @@ func (s *Store) MaybeUpdate(rawConfig conftypes.RawUnifiedConfiguration) (Update
 		New:     s.lastValid,
 	}
 
+	if rawConfig.Core == "" {
+		return result, errors.New("invalid core configuration (empty string)")
+	}
+	if rawConfig.Site == "" {
+		return result, errors.New("invalid site configuration (empty string)")
+	}
 	if s.raw.Equal(rawConfig) {
 		return result, nil
 	}
@@ -121,6 +128,9 @@ func (s *Store) WaitUntilInitialized() {
 		// We assume that we're in an unrecoverable deadlock if frontend hasn't
 		// started its configuration server after 30 seconds.
 		case <-time.After(30 * time.Second):
+			// The running goroutine is not necessarily the cause of the
+			// deadlock, so ask Go to dump all goroutine stack traces.
+			debug.SetTraceback("all")
 			panic("deadlock detected: you have called conf.Get or conf.Watch before the frontend has been initialized (you may need to use a goroutine)")
 		}
 	}

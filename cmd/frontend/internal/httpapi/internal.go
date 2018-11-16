@@ -16,7 +16,6 @@ import (
 	"github.com/sourcegraph/sourcegraph/cmd/frontend/types"
 	"github.com/sourcegraph/sourcegraph/pkg/api"
 	"github.com/sourcegraph/sourcegraph/pkg/conf"
-	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
 	"github.com/sourcegraph/sourcegraph/pkg/gitserver"
 	"github.com/sourcegraph/sourcegraph/pkg/jsonc"
 	"github.com/sourcegraph/sourcegraph/pkg/txemail"
@@ -161,26 +160,14 @@ func serveReposInventory(w http.ResponseWriter, r *http.Request) error {
 }
 
 func serveConfiguration(w http.ResponseWriter, r *http.Request) error {
-	coreFile, err := db.CoreSiteConfigurationFiles.CoreGetLatest(r.Context())
+	raw, err := globals.DBConfigurationSource.Read(r.Context())
 	if err != nil {
-		return errors.Wrap(err, "CoreSiteConfigurationFiles.CoreGetLatest")
+		return err
 	}
-	siteFile, err := db.CoreSiteConfigurationFiles.SiteGetLatest(r.Context())
-	if err != nil {
-		return errors.Wrap(err, "CoreSiteConfigurationFiles.SiteGetLatest")
-	}
-	// TODO(slimsag): UnifiedConfiguration
-	deployment := conftypes.DeploymentConfiguration{}
-
-	err = json.NewEncoder(w).Encode(conftypes.RawUnifiedConfiguration{
-		Core:       coreFile.Contents,
-		Site:       siteFile.Contents,
-		Deployment: deployment,
-	})
+	err = json.NewEncoder(w).Encode(raw)
 	if err != nil {
 		return errors.Wrap(err, "Encode")
 	}
-
 	return nil
 }
 

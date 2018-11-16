@@ -2,9 +2,11 @@
 package globals
 
 import (
+	"context"
 	"net/url"
-	"os"
 
+	"github.com/pkg/errors"
+	"github.com/sourcegraph/sourcegraph/cmd/frontend/db"
 	"github.com/sourcegraph/sourcegraph/pkg/conf"
 	"github.com/sourcegraph/sourcegraph/pkg/conf/conftypes"
 )
@@ -16,42 +18,37 @@ var ExternalURL = &url.URL{Scheme: "http", Host: "example.com"}
 // to other services and manages modifications to it.
 //
 // Any another service that attempts to use this variable will panic.
-var ConfigurationServerFrontendOnly = conf.InitConfigurationServerFrontendOnly(configurationSource{
-	configFilePath: os.Getenv("SOURCEGRAPH_CONFIG_FILE"),
-})
+var ConfigurationServerFrontendOnly *conf.Server
 
-type configurationSource struct {
-	configFilePath string
+func DoInit() {
+	ConfigurationServerFrontendOnly = conf.InitConfigurationServerFrontendOnly(DBConfigurationSource)
 }
 
-func (c configurationSource) Read() (conftypes.RawUnifiedConfiguration, error) {
+// DBConfigurationSource is the configuration stored in the database.
+var DBConfigurationSource = &configurationSource{}
+
+type configurationSource struct{}
+
+func (c configurationSource) Read(ctx context.Context) (conftypes.RawUnifiedConfiguration, error) {
+	coreFile, err := db.CoreSiteConfigurationFiles.CoreGetLatest(ctx)
+	if err != nil {
+		return conftypes.RawUnifiedConfiguration{}, errors.Wrap(err, "CoreSiteConfigurationFiles.CoreGetLatest")
+	}
+	siteFile, err := db.CoreSiteConfigurationFiles.SiteGetLatest(ctx)
+	if err != nil {
+		return conftypes.RawUnifiedConfiguration{}, errors.Wrap(err, "CoreSiteConfigurationFiles.SiteGetLatest")
+	}
 	// TODO(slimsag): UnifiedConfiguration
+	deployment := conftypes.DeploymentConfiguration{}
 	return conftypes.RawUnifiedConfiguration{
-		Core:       `{}`,
-		Site:       `{}`,
-		Deployment: conftypes.DeploymentConfiguration{},
+		Core:       coreFile.Contents,
+		Site:       siteFile.Contents,
+		Deployment: deployment,
 	}, nil
-	/*
-		data, err := ioutil.ReadFile(c.FilePath())
-		if err != nil {
-			return "", errors.Wrapf(err, "unable to read config file from %q", c.FilePath())
-		}
-
-		return string(data), err
-	*/
 }
 
-func (c configurationSource) Write(input conftypes.RawUnifiedConfiguration) error {
+func (c configurationSource) Write(ctx context.Context, input conftypes.RawUnifiedConfiguration) error {
 	// TODO(slimsag): UnifiedConfiguration
 	//return ioutil.WriteFile(c.FilePath(), []byte(input), 0600)
 	return nil
-}
-
-func (c configurationSource) FilePath() string {
-	filePath := c.configFilePath
-	if filePath == "" {
-		filePath = "/etc/sourcegraph/config.json"
-	}
-
-	return filePath
 }

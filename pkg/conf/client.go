@@ -160,14 +160,15 @@ func (c *client) continuouslyUpdate() {
 }
 
 func (c *client) fetchAndUpdate() error {
+	ctx := context.Background()
 	var (
 		newConfig conftypes.RawUnifiedConfiguration
 		err       error
 	)
 	if c.passthrough != nil {
-		newConfig, err = c.passthrough.Read()
+		newConfig, err = c.passthrough.Read(ctx)
 	} else {
-		newConfig, err = api.InternalClient.Configuration(context.Background())
+		newConfig, err = api.InternalClient.Configuration(ctx)
 	}
 	if err != nil {
 		return errors.Wrap(err, "unable to fetch new configuration")
