@@ -222,6 +222,7 @@ func TestEndToEnd(t *testing.T) {
 
 	// Start up a full server.
 	context, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	server := exec.CommandContext(context, "./web-repo-proxy")
 	server.Env = append(os.Environ(),
 		"REPOSITORIES_ROOT="+repositoriesRoot,

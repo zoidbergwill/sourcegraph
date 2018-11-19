@@ -188,7 +188,7 @@ func sanitizedCreateRequest(requestBody io.Reader) (*CreateRepositoryRequest, er
 	// anything that has a slash in it.
 	// This is not enough to ensure that a filename is valid, but unsupported
 	// filename strings are caught in the file creation stage.
-	for filename, _ := range request.FileContents {
+	for filename := range request.FileContents {
 		if strings.Contains(filename, "/") {
 			return nil, errors.New("Repository filenames can't contain '/'")
 		}
