@@ -269,7 +269,8 @@ export class Controller<X extends Extension, C extends SettingsCascade> implemen
                 this.registries.textDocumentDefinition,
                 this.registries.textDocumentTypeDefinition,
                 this.registries.textDocumentImplementation,
-                this.registries.textDocumentReferences
+                this.registries.textDocumentReferences,
+                this.registries.textDocumentExternalReferences
             )
         )
         subscription.add(new Search(client, this.registries.queryTransformer))

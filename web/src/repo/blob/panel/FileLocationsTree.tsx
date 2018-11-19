@@ -7,6 +7,8 @@ import { catchError, delay, distinctUntilChanged, map, startWith, switchMap, tak
 import { isError } from 'util'
 import { parseRepoURI } from '../..'
 import { Location } from '../../../../../shared/src/api/protocol/plainTypes'
+import { Controller } from '../../../../../shared/src/client/controller'
+import { Settings, SettingsSubject } from '../../../../../shared/src/settings'
 import { Resizable } from '../../../components/Resizable'
 import { ErrorLike, isErrorLike } from '../../../util/errors'
 import { asError } from '../../../util/errors'
@@ -18,7 +20,7 @@ interface Props {
     /**
      * The function called to query for file locations.
      */
-    query: () => Observable<{ loading: boolean; locations: Location[] }>
+    query: (c: any) => Observable<{ loading: boolean; locations: Location[] }>
 
     /** An observable that upon emission causes the connection to refresh the data (by calling queryConnection). */
     updates?: Observable<void>
@@ -52,6 +54,8 @@ interface Props {
     isLightTheme: boolean
 
     location: H.Location
+
+    extensionsController: Controller<SettingsSubject, Settings>
 }
 
 interface State {
@@ -97,7 +101,7 @@ export class FileLocationsTree extends React.PureComponent<Props, State> {
                 .pipe(
                     switchMap(([query]) => {
                         type PartialStateUpdate = Pick<State, 'locationsOrError' | 'loading'>
-                        const result = query().pipe(
+                        const result = query(this.props.extensionsController).pipe(
                             catchError(error => [asError(error)]),
                             map(
                                 c =>

@@ -1,8 +1,12 @@
 import { from, Observable } from 'rxjs'
 import { bufferCount, catchError, concatMap, filter, map, mergeMap, tap } from 'rxjs/operators'
-import { makeRepoURI } from '../..'
+import { AbsoluteRepoFile, makeRepoURI } from '../..'
+import { TextDocumentIdentifier } from '../../../../../shared/src/api/client/types/textDocument'
 import { Location } from '../../../../../shared/src/api/protocol/plainTypes'
+import { ReferenceParams } from '../../../../../shared/src/api/protocol/reference'
+import { Controller } from '../../../../../shared/src/client/controller'
 import * as GQL from '../../../../../shared/src/graphqlschema'
+import { Settings, SettingsSubject } from '../../../../../shared/src/settings'
 import { getXdefinition, getXreferences } from '../../../backend/features'
 import { gql, queryGraphQL } from '../../../backend/graphql'
 import { LSPTextDocumentPositionParams } from '../../../backend/lsp'
@@ -79,6 +83,27 @@ const fetchDependencyReferences = memoizeObservable(
         ),
     makeRepoURI
 )
+
+export const toTextDocumentIdentifier = (pos: AbsoluteRepoFile): TextDocumentIdentifier => ({
+    uri: `git://${pos.repoPath}?${pos.commitID}#${pos.filePath}`,
+})
+
+function contextToReferenceParams(ctx: LSPTextDocumentPositionParams): ReferenceParams {
+    return {
+        context: { includeDeclaration: false },
+        position: ctx.position,
+        textDocument: toTextDocumentIdentifier(ctx),
+    }
+}
+
+export function fetchExternalReferencesViaExtensions(
+    extensionsController: Controller<SettingsSubject, Settings>,
+    ctx: LSPTextDocumentPositionParams
+): Observable<Location[]> {
+    return extensionsController.registries.textDocumentExternalReferences
+        .getLocation(contextToReferenceParams(ctx))
+        .pipe(filter((l: Location[] | null): l is Location[] => !!l))
+}
 
 export const fetchExternalReferences = (ctx: LSPTextDocumentPositionParams): Observable<Location[]> =>
     // Memoization is not done at the top level (b/c we only support Promise fetching memoization ATM).

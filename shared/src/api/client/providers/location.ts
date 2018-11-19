@@ -76,3 +76,20 @@ export class TextDocumentReferencesProviderRegistry extends TextDocumentLocation
         return getLocations(this.providers, params)
     }
 }
+
+/**
+ * Provides external reference results from all extensions.
+ *
+ * External reference results are always an array or null, unlike results from other location providers (e.g., from
+ * textDocument/definition), which can be a single item, an array, or null.
+ */
+export class TextDocumentExternalReferencesProviderRegistry extends TextDocumentLocationProviderRegistry<
+    ReferenceParams
+> {
+    /** Gets external reference locations from all extensions. */
+    public getLocation(params: ReferenceParams): Observable<Location[] | null> {
+        // References are always an array (unlike other locations, which can be returned as L | L[] |
+        // null).
+        return getLocations(this.providers, params)
+    }
+}

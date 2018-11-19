@@ -681,7 +681,7 @@ declare module 'sourcegraph' {
      * A provider result represents the values that a provider, such as the {@link HoverProvider},
      * may return.
      */
-    export type ProviderResult<T> = T | undefined | null | Promise<T | undefined | null>
+    export type ProviderResult<T> = T | undefined | null | Promise<T | undefined | null> | Subscribable<T | undefined | null>
 
     /** The kinds of markup that can be used. */
     export const enum MarkupKind {
@@ -805,6 +805,26 @@ declare module 'sourcegraph' {
         ): ProviderResult<Location[]>
     }
 
+    /**
+     * Responds to requests for external references with a list of locations.
+     * "External" means outside of the current repository.
+     */
+    export interface ExternalReferenceProvider {
+        /**
+         * Provides a set of external references for the given position in a document.
+         *
+         * @param document The document in which the command was invoked.
+         * @param position The position at which the command was invoked.
+         * @param context Additional information and parameters for the request.
+         * @return An array of reference locations.
+         */
+        provideExternalReferences(
+            document: TextDocument,
+            position: Position,
+            context: ReferenceContext
+        ): ProviderResult<Location[]>
+    }
+
     export namespace languages {
         export function registerHoverProvider(selector: DocumentSelector, provider: HoverProvider): Unsubscribable
 
@@ -870,6 +890,22 @@ declare module 'sourcegraph' {
         export function registerReferenceProvider(
             selector: DocumentSelector,
             provider: ReferenceProvider
+        ): Unsubscribable
+
+        /**
+         * Registers an external reference provider.
+         *
+         * Multiple providers can be registered for a language. In that case, providers are queried in parallel and
+         * the results are merged. A failing provider (rejected promise or exception) will not cause the whole
+         * operation to fail.
+         *
+         * @param selector A selector that defines the documents this provider is applicable to.
+         * @param provider An external reference provider.
+         * @return An unsubscribable to unregister this provider.
+         */
+        export function registerExternalReferenceProvider(
+            selector: DocumentSelector,
+            provider: ExternalReferenceProvider
         ): Unsubscribable
     }
 

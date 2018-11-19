@@ -44,7 +44,7 @@ import { parseHash } from '../../../util/url'
 import { RepoHeaderContributionsLifecycleProps } from '../../RepoHeader'
 import { RepoRevSidebarCommits } from '../../RepoRevSidebarCommits'
 import { DiscussionsTree } from '../discussions/DiscussionsTree'
-import { fetchExternalReferences } from '../references/backend'
+import { fetchExternalReferencesViaExtensions } from '../references/backend'
 import { FileLocations } from './FileLocations'
 import { FileLocationsTree } from './FileLocationsTree'
 
@@ -253,6 +253,7 @@ export class BlobPanel extends React.PureComponent<Props, State> {
                         priority={-2}
                         element={
                             <FileLocationsTree
+                                extensionsController={this.props.extensionsController}
                                 className="panel__tabs-content"
                                 query={this.queryReferencesExternal}
                                 updates={this.locationsUpdates}
@@ -338,8 +339,10 @@ export class BlobPanel extends React.PureComponent<Props, State> {
             map(c => ({ loading: false, locations: c }))
         )
 
-    private queryReferencesExternal = (): Observable<{ loading: boolean; locations: Location[] }> =>
-        fetchExternalReferences(this.props as LSPTextDocumentPositionParams).pipe(
+    private queryReferencesExternal = (
+        extensionsController: any
+    ): Observable<{ loading: boolean; locations: Location[] }> =>
+        fetchExternalReferencesViaExtensions(extensionsController, this.props as LSPTextDocumentPositionParams).pipe(
             map(c => ({ loading: true, locations: c })),
             concat([{ loading: false, locations: [] }]),
             bufferTime(500), // reduce UI jitter

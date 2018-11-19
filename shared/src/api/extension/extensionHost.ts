@@ -155,6 +155,8 @@ function createExtensionHandle(initData: InitData, connection: Connection): type
                 languageFeatures.registerImplementationProvider(selector, provider),
             registerReferenceProvider: (selector, provider) =>
                 languageFeatures.registerReferenceProvider(selector, provider),
+            registerExternalReferenceProvider: (selector, provider) =>
+                languageFeatures.registerExternalReferenceProvider(selector, provider),
         },
 
         search: {

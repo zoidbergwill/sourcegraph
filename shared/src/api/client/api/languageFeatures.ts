@@ -7,7 +7,11 @@ import { ReferenceParams, TextDocumentPositionParams, TextDocumentRegistrationOp
 import { Connection } from '../../protocol/jsonrpc2/connection'
 import { Definition, Hover, Location } from '../../protocol/plainTypes'
 import { ProvideTextDocumentHoverSignature } from '../providers/hover'
-import { ProvideTextDocumentLocationSignature, TextDocumentReferencesProviderRegistry } from '../providers/location'
+import {
+    ProvideTextDocumentLocationSignature,
+    TextDocumentExternalReferencesProviderRegistry,
+    TextDocumentReferencesProviderRegistry,
+} from '../providers/location'
 import { FeatureProviderRegistry } from '../providers/registry'
 import { SubscriptionMap } from './common'
 
@@ -19,6 +23,7 @@ export interface ClientLanguageFeaturesAPI {
     $registerTypeDefinitionProvider(id: number, selector: DocumentSelector): void
     $registerImplementationProvider(id: number, selector: DocumentSelector): void
     $registerReferenceProvider(id: number, selector: DocumentSelector): void
+    $registerExternalReferenceProvider(id: number, selector: DocumentSelector): void
 }
 
 /** @internal */
@@ -45,11 +50,16 @@ export class ClientLanguageFeatures implements ClientLanguageFeaturesAPI {
             TextDocumentRegistrationOptions,
             ProvideTextDocumentLocationSignature
         >,
-        private referencesRegistry: TextDocumentReferencesProviderRegistry
+        private referencesRegistry: TextDocumentReferencesProviderRegistry,
+        private externalReferencesRegistry: TextDocumentExternalReferencesProviderRegistry
     ) {
         this.subscriptions.add(this.registrations)
 
         this.proxy = createProxyAndHandleRequests('languageFeatures', connection, this)
+    }
+
+    public $observableEmitted(args: any): void {
+        console.log('recv observableEmitted', args)
     }
 
     public $unregister(id: number): void {
@@ -62,7 +72,7 @@ export class ClientLanguageFeatures implements ClientLanguageFeaturesAPI {
             this.hoverRegistry.registerProvider(
                 { documentSelector: selector },
                 (params: TextDocumentPositionParams): Observable<Hover | null | undefined> =>
-                    from(this.proxy.$provideHover(id, params.textDocument.uri, params.position))
+                    this.proxy.$provideHover(id, params.textDocument.uri, params.position)
             )
         )
     }
@@ -114,6 +124,24 @@ export class ClientLanguageFeatures implements ClientLanguageFeaturesAPI {
                 (params: ReferenceParams): Observable<Location[]> =>
                     from(
                         this.proxy.$provideReferences(id, params.textDocument.uri, params.position, params.context)
+                    ).pipe(map(result => result || []))
+            )
+        )
+    }
+
+    public $registerExternalReferenceProvider(id: number, selector: DocumentSelector): void {
+        this.registrations.add(
+            id,
+            this.externalReferencesRegistry.registerProvider(
+                { documentSelector: selector },
+                (params: ReferenceParams): Observable<Location[]> =>
+                    from(
+                        this.proxy.$provideExternalReferences(
+                            id,
+                            params.textDocument.uri,
+                            params.position,
+                            params.context
+                        )
                     ).pipe(map(result => result || []))
             )
         )

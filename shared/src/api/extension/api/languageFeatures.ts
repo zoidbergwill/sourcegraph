@@ -1,10 +1,13 @@
-import { Unsubscribable } from 'rxjs'
+import { from, Observable, ObservableInput, of, Unsubscribable } from 'rxjs'
+import { concatMap, map, tap } from 'rxjs/operators'
 import {
     DefinitionProvider,
     DocumentSelector,
+    ExternalReferenceProvider,
     HoverProvider,
     ImplementationProvider,
     Location,
+    ProviderResult,
     ReferenceContext,
     ReferenceProvider,
     TypeDefinitionProvider,
@@ -17,43 +20,74 @@ import { fromHover, fromLocation, toPosition } from './types'
 
 /** @internal */
 export interface ExtLanguageFeaturesAPI {
-    $provideHover(id: number, resource: string, position: plain.Position): Promise<plain.Hover | null | undefined>
-    $provideDefinition(id: number, resource: string, position: plain.Position): Promise<plain.Definition | undefined>
+    $provideHover(id: number, resource: string, position: plain.Position): Observable<plain.Hover | null | undefined>
+    $provideDefinition(id: number, resource: string, position: plain.Position): Observable<plain.Definition | undefined>
     $provideTypeDefinition(
         id: number,
         resource: string,
         position: plain.Position
-    ): Promise<plain.Definition | undefined>
+    ): Observable<plain.Definition | undefined>
     $provideImplementation(
         id: number,
         resource: string,
         position: plain.Position
-    ): Promise<plain.Definition | undefined>
+    ): Observable<plain.Definition | undefined>
     $provideReferences(
         id: number,
         resource: string,
         position: plain.Position,
         context: ReferenceContext
-    ): Promise<plain.Location[] | null | undefined>
+    ): Observable<plain.Location[] | null | undefined>
+    $provideExternalReferences(
+        id: number,
+        resource: string,
+        position: plain.Position,
+        context: ReferenceContext
+    ): Observable<plain.Location[] | null | undefined>
+}
+
+/**
+ * Converts a result from a provider to an Observable.
+ */
+function providerResultToObservable<T>(r: ProviderResult<T>): ObservableInput<T | null | undefined> {
+    // TODO write tests
+    if (!r || !('subscribe' in (r as any) || 'then' in (r as any))) {
+        return of(r as null | undefined)
+    } else if ('subscribe' in (r as any)) {
+        return r as ObservableInput<T | null | undefined>
+    } else {
+        return r as Promise<T | null | undefined>
+    }
 }
 
 /** @internal */
 export class ExtLanguageFeatures implements ExtLanguageFeaturesAPI {
     private registrations = new ProviderMap<
-        HoverProvider | DefinitionProvider | TypeDefinitionProvider | ImplementationProvider | ReferenceProvider
+        | HoverProvider
+        | DefinitionProvider
+        | TypeDefinitionProvider
+        | ImplementationProvider
+        | ReferenceProvider
+        | ExternalReferenceProvider
     >(id => this.proxy.$unregister(id))
 
     constructor(private proxy: ClientLanguageFeaturesAPI, private documents: ExtDocuments) {}
 
-    public async $provideHover(
+    public $provideHover(
         id: number,
         resource: string,
         position: plain.Position
-    ): Promise<plain.Hover | null | undefined> {
+    ): Observable<plain.Hover | null | undefined> {
         const provider = this.registrations.get<HoverProvider>(id)
-        return Promise.resolve(
-            provider.provideHover(await this.documents.getSync(resource), toPosition(position))
-        ).then(result => (result ? fromHover(result) : result))
+        const x = this.documents.getSync(resource)
+        console.log('should concatMap')
+        return from(x).pipe(
+            concatMap(doc => {
+                console.log('concatMap')
+                return providerResultToObservable(provider.provideHover(doc, toPosition(position)))
+            }),
+            map(result => (result ? fromHover(result) : result))
+        )
     }
 
     public registerHoverProvider(selector: DocumentSelector, provider: HoverProvider): Unsubscribable {
@@ -62,15 +96,16 @@ export class ExtLanguageFeatures implements ExtLanguageFeaturesAPI {
         return subscription
     }
 
-    public async $provideDefinition(
+    public $provideDefinition(
         id: number,
         resource: string,
         position: plain.Position
-    ): Promise<plain.Definition | null | undefined> {
+    ): Observable<plain.Definition | null | undefined> {
         const provider = this.registrations.get<DefinitionProvider>(id)
-        return Promise.resolve(
-            provider.provideDefinition(await this.documents.getSync(resource), toPosition(position))
-        ).then(toDefinition)
+        return from(this.documents.getSync(resource)).pipe(
+            concatMap(doc => providerResultToObservable(provider.provideDefinition(doc, toPosition(position)))),
+            map(toDefinition)
+        )
     }
 
     public registerDefinitionProvider(selector: DocumentSelector, provider: DefinitionProvider): Unsubscribable {
@@ -79,15 +114,16 @@ export class ExtLanguageFeatures implements ExtLanguageFeaturesAPI {
         return subscription
     }
 
-    public async $provideTypeDefinition(
+    public $provideTypeDefinition(
         id: number,
         resource: string,
         position: plain.Position
-    ): Promise<plain.Definition | null | undefined> {
+    ): Observable<plain.Definition | null | undefined> {
         const provider = this.registrations.get<TypeDefinitionProvider>(id)
-        return Promise.resolve(
-            provider.provideTypeDefinition(await this.documents.getSync(resource), toPosition(position))
-        ).then(toDefinition)
+        return from(this.documents.getSync(resource)).pipe(
+            concatMap(doc => providerResultToObservable(provider.provideTypeDefinition(doc, toPosition(position)))),
+            map(toDefinition)
+        )
     }
 
     public registerTypeDefinitionProvider(
@@ -99,15 +135,16 @@ export class ExtLanguageFeatures implements ExtLanguageFeaturesAPI {
         return subscription
     }
 
-    public async $provideImplementation(
+    public $provideImplementation(
         id: number,
         resource: string,
         position: plain.Position
-    ): Promise<plain.Definition | undefined> {
+    ): Observable<plain.Definition | undefined> {
         const provider = this.registrations.get<ImplementationProvider>(id)
-        return Promise.resolve(
-            provider.provideImplementation(await this.documents.getSync(resource), toPosition(position))
-        ).then(toDefinition)
+        return from(this.documents.getSync(resource)).pipe(
+            concatMap(doc => providerResultToObservable(provider.provideImplementation(doc, toPosition(position)))),
+            map(toDefinition)
+        )
     }
 
     public registerImplementationProvider(
@@ -119,21 +156,48 @@ export class ExtLanguageFeatures implements ExtLanguageFeaturesAPI {
         return subscription
     }
 
-    public async $provideReferences(
+    public $provideReferences(
         id: number,
         resource: string,
         position: plain.Position,
         context: ReferenceContext
-    ): Promise<plain.Location[] | null | undefined> {
+    ): Observable<plain.Location[] | null | undefined> {
         const provider = this.registrations.get<ReferenceProvider>(id)
-        return Promise.resolve(
-            provider.provideReferences(await this.documents.getSync(resource), toPosition(position), context)
-        ).then(toLocations)
+        return from(this.documents.getSync(resource)).pipe(
+            concatMap(doc =>
+                providerResultToObservable(provider.provideReferences(doc, toPosition(position), context))
+            ),
+            map(toLocations)
+        )
     }
 
     public registerReferenceProvider(selector: DocumentSelector, provider: ReferenceProvider): Unsubscribable {
         const { id, subscription } = this.registrations.add(provider)
         this.proxy.$registerReferenceProvider(id, selector)
+        return subscription
+    }
+
+    public $provideExternalReferences(
+        id: number,
+        resource: string,
+        position: plain.Position,
+        context: ReferenceContext
+    ): Observable<plain.Location[] | null | undefined> {
+        const provider = this.registrations.get<ExternalReferenceProvider>(id)
+        return from(this.documents.getSync(resource)).pipe(
+            concatMap(doc =>
+                providerResultToObservable(provider.provideExternalReferences(doc, toPosition(position), context))
+            ),
+            map(toLocations)
+        )
+    }
+
+    public registerExternalReferenceProvider(
+        selector: DocumentSelector,
+        provider: ExternalReferenceProvider
+    ): Unsubscribable {
+        const { id, subscription } = this.registrations.add(provider)
+        this.proxy.$registerExternalReferenceProvider(id, selector)
         return subscription
     }
 }
