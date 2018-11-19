@@ -26,7 +26,6 @@ var (
 	// Extract the http handler functions from their generators.
 	createRepositoryHandler = handleCreateRepository()
 	repositoryHandler       = handleRepository()
-	listRepositoriesHandler = handleListRepositories()
 )
 
 func TestMain(m *testing.M) {
